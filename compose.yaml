@@ -1,0 +1,13 @@
+services:
+  app:
+    image: proyecto-final-laravel:php8.3
+    build: .
+    init: true
+    ports:
+      - "127.0.0.1:${APP_PORT:-8080}:8000"
+    healthcheck:
+      test: ["CMD", "php", "-r", "exit(@file_get_contents('http://127.0.0.1:8000/up') === false ? 1 : 0);"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 10s

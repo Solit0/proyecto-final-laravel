@@ -21,11 +21,11 @@ Esta es la **base de la Fase 1 de Harry**, no la Fase 1 completa del equipo.
 
 | Componente | Estado |
 |---|---|
-| Laravel 13, configuración local y ejemplo PostgreSQL/SSL | Preparado |
+| Laravel 13 en Docker Compose, configuración y PostgreSQL/SSL | Preparado |
 | Factory y seeders de 3 laboratorios, 15 equipos y 3 mantenimientos | Implementados y comprobados con contrato de pruebas |
 | README de instalación y reparto del trabajo | Preparado |
 | Proyecto Supabase | Creado y verificado: inventario-laboratorios, organización idk, región us-east-1 |
-| Conexión real desde Laravel | Verificada con PHP 8.3 y pdo_pgsql en el entorno de verificación; falta habilitar pdo_pgsql en el PHP del sistema |
+| Conexión real desde Laravel | Verificada con PHP 8.3 y pdo_pgsql; Docker incluye las extensiones necesarias |
 | Migraciones definitivas y modelos del negocio | Pendientes de Miguel y David |
 | Listado, ficha, layout e imagen predeterminada | Pendientes de David y Alfredo |
 | Clon completo con listado y ficha | Pendiente de integrar módulos del negocio |
@@ -41,31 +41,28 @@ Fase 1: presentación acordada para el **5 de noviembre de 2026**. Fase 2: **12 
 
 ## Requisitos
 
-- PHP **8.3 o superior**, Composer 2 y extensiones habituales de Laravel: PDO, mbstring, XML/DOM, ctype, curl, fileinfo, openssl y tokenizer.
-- **pdo_pgsql** habilitado para Supabase; **pdo_sqlite** para ejecutar las pruebas aisladas.
+- Docker Engine con Docker Compose v2 o posterior, o Docker Desktop con Compose.
+- Git para clonar el repositorio.
 - Acceso a Internet y al proyecto Supabase compartido para consultar los datos del sistema.
-- Git. Node y npm no son necesarios para el CSS propio acordado; el scaffold conserva archivos Vite sin requerir compilación para su bienvenida inicial.
+
+El contenedor incluye PHP **8.3.35**, Composer **2.10.3**, PostgreSQL PDO, SQLite PDO, intl y zip, además de las extensiones habituales de Laravel. Todo PHP y Composer se ejecuta dentro de Docker; el único servicio es la aplicación. La base de datos permanece en Supabase. El CSS propio acordado no requiere Node ni npm.
 
 ```sh
-php -v
-composer --version
-php --ini
-php -m
+docker --version
+docker compose version
 ```
 
-`php -m` debe mostrar `pdo_pgsql`. En XAMPP/Laragon, habilitar la extensión en el php.ini usado por la consola. En Arch Linux, instalar `php-pgsql` y habilitar `extension=pdo_pgsql` en el archivo de configuración indicado por `php --ini`; para pruebas instalar/habilitar también `php-sqlite` y `extension=pdo_sqlite`. La habilitación del PHP del sistema puede requerir permisos de administrador.
+## Instalación local con Docker
 
-## Instalación local
+Mientras el [PR #1](https://github.com/Solit0/proyecto-final-laravel/pull/1) siga en revisión, clonar la rama de trabajo:
 
 ```sh
-git clone https://github.com/Solit0/proyecto-final-laravel.git
+git clone --branch chore/harry-fase-1 https://github.com/Solit0/proyecto-final-laravel.git
 cd proyecto-final-laravel
-composer install
 cp .env.example .env
-php artisan key:generate --no-interaction
 ```
 
-En PowerShell se puede reemplazar `cp .env.example .env` por `Copy-Item .env.example .env`.
+Si ya tienes este proyecto y su `.env` privado configurado, conserva ese archivo. En PowerShell se puede reemplazar `cp .env.example .env` por `Copy-Item .env.example .env`.
 
 El `.env.example` ya contiene el Host de **Supabase → Connect → Session pooler** que confirmó el equipo y el usuario exclusivo de Laravel. Completar únicamente la contraseña en el `.env` local, compartida por un canal privado:
 
@@ -83,22 +80,34 @@ El Host se copió completo desde Connect; no se construyó a partir de la regió
 
 Como Supabase se usa únicamente como motor PostgreSQL desde Laravel, se recomienda desactivar **Enable Data API** desde la configuración del proyecto dedicado. El conector ya permitió restringir el acceso al esquema public; no se afirma que haya cambiado ese interruptor del panel. Las tablas del negocio se crean con migraciones de Laravel, nunca con el editor de tablas. La contraseña de Laravel se generó localmente y permanece únicamente en `.env`; no se versiona ni aparece en la documentación.
 
-La configuración local usa zona horaria `America/El_Salvador`, sesiones y caché en archivos y cola síncrona. No requiere Redis ni procesos de colas.
+La configuración usa zona horaria `America/El_Salvador`, sesiones y caché en archivos y cola síncrona. `compose.override.yaml` monta el código del proyecto en `/app`, así que las ediciones se ven en el contenedor y vendor, sesiones e imágenes se conservan en la carpeta local al detenerlo. El `.env` no se copia a la imagen ni se publica en Git.
+
+En Linux, si tu usuario y grupo tienen identificadores distintos a 1000, consultar `id -u` e `id -g` y ajustar `LOCAL_UID` y `LOCAL_GID` en `.env` para que Docker cree archivos con tu usuario. Los valores predeterminados ya corresponden a esta computadora.
+
+Primera instalación, usando únicamente Docker:
 
 ```sh
-php artisan config:clear
-php artisan storage:link --no-interaction
-php artisan serve
+docker compose build app
+docker compose run --rm app composer install --no-interaction
+docker compose run --rm app php artisan key:generate --no-interaction
+docker compose run --rm app php artisan storage:link --no-interaction
+docker compose up -d
 ```
 
-Abrir [http://localhost:8000](http://localhost:8000). Esto permite comprobar la bienvenida de Laravel sin consultar tablas del negocio. Los seeders no pueden ejecutarse todavía sobre la estructura definitiva porque faltan esas migraciones.
+Generar APP_KEY solo al configurar una instalación nueva; en esta computadora ya existe y no se debe regenerar en cada arranque. Ejecutar storage:link dentro del contenedor para que apunte a `/app/storage/app/public`. Si se está migrando una instalación anterior con un enlace creado fuera de Docker, recrearlo una vez con `docker compose run --rm app php artisan storage:link --force --no-interaction`.
+
+Abrir [http://localhost:8080](http://localhost:8080). El contenedor ejecuta `php artisan serve` en el puerto interno 8000 y Docker lo publica únicamente en esta computadora. Por ahora muestra la bienvenida de Laravel. Los seeders no pueden ejecutarse todavía sobre la estructura definitiva porque faltan las migraciones del negocio.
+
+Para los siguientes arranques, basta con `docker compose up -d`. `docker compose ps` muestra el estado y `docker compose logs --tail=50 app` muestra la salida del servidor. Para detenerlo, usar `docker compose down`; no se necesitan opciones que borren volúmenes ni comandos que reinicien Supabase.
+
+Si el puerto 8080 está ocupado, cambiar `APP_PORT` y `APP_URL` en `.env` y ejecutar de nuevo `docker compose up -d`. Al cambiar otras variables de Laravel, ejecutar `docker compose exec app php artisan config:clear`.
 
 ### Cuando Miguel entregue las migraciones definitivas
 
 Harry coordina su aplicación una sola vez sobre la base compartida:
 
 ```sh
-php artisan migrate --seed --no-interaction
+docker compose exec app php artisan migrate --seed --no-interaction
 ```
 
 Los demás integrantes actualizan el repositorio y consultan esa misma base; no deben ejecutar migraciones o seeders de forma simultánea. `DatabaseSeeder` informa claramente si falta una de las tablas del negocio antes de insertar datos. Las filas de ejemplo se conservan al repetir los seeders: códigos existentes no se sobrescriben y los mantenimientos de ejemplo no se duplican.
@@ -108,7 +117,7 @@ Los demás integrantes actualizan el repositorio y consultan esa misma base; no 
 Solo Harry, después de acordarlo con el equipo y confirmar que se pueden perder todos los datos del proyecto dedicado, utiliza:
 
 ```sh
-php artisan migrate:fresh --seed --no-interaction
+docker compose exec app php artisan migrate:fresh --seed --no-interaction
 ```
 
 Este comando elimina tablas y datos. Es una demostración obligatoria de la Fase 1 completa, pero **todavía no se ha verificado contra las migraciones definitivas ni contra Supabase**. No ejecutarlo como parte de cada instalación o actualización de un compañero.
@@ -172,22 +181,22 @@ El historial de ejemplo respeta adquisición y estado; un correctivo nuevo cambi
 ## Pruebas
 
 ```sh
-php artisan test --compact
+docker compose exec app php artisan test --compact
 ```
 
 Las pruebas ordinarias fuerzan SQLite en memoria y anulan DB_URL; no leen ni limpian Supabase. Las tablas de `tests/Fixtures/migrations` son un contrato temporal, fuera de `database/migrations`: **no son las migraciones de entrega de Miguel** y no deben ejecutarse en la base compartida.
 
 Se verifican arranque, datos mínimos, identificadores, fechas, repetición sin duplicados, conservación de equipos editados, rechazo de estructura incompleta, rollback de semillas y exclusión de equipos dados de baja.
 
-Validación de esta entrega: PHP 8.3, 8 pruebas pasadas; además, seeders comprobados dos veces sobre PostgreSQL 16 aislado con fixtures, obteniendo 3 laboratorios, 15 equipos, 3 mantenimientos y cero mantenimientos inválidos. La conexión real a Supabase se comprobó mediante Laravel con `sslmode=require`, base postgres y rol laravel_app. El chequeo de seguridad de Supabase no reportó avisos. El ensayo completo de listado/ficha sigue pendiente de los módulos del equipo.
+Validación de esta entrega: imagen construida, servicio saludable, HTTP 200 en `/` y `/up`, e instalación con Docker probada desde una copia limpia sin vendor. Las 8 pruebas pasaron con PHP 8.3 tanto en el proyecto como en esa copia. Además, seeders comprobados dos veces sobre PostgreSQL 16 aislado con fixtures, obteniendo 3 laboratorios, 15 equipos, 3 mantenimientos y cero mantenimientos inválidos. La conexión real a Supabase se comprobó desde el servicio de Compose mediante Laravel con `sslmode=require`, base postgres y rol laravel_app. El chequeo de seguridad de Supabase no reportó avisos. El ensayo completo de listado/ficha sigue pendiente de los módulos del equipo.
 
-Para volver a comprobar la conexión, después de habilitar pdo_pgsql y configurar el `.env` privado:
+Para volver a comprobar la conexión, con el contenedor iniciado y el `.env` privado configurado:
 
 ```sh
-php artisan db:show --database=pgsql --json --no-interaction
+docker compose exec app php artisan db:show --database=pgsql --json --no-interaction
 ```
 
-La salida JSON evita que esta comprobación requiera la extensión intl para formatear tamaños. Las pruebas del inventario continúan aisladas de la base compartida.
+La salida identifica la conexión y base de datos; no necesita mostrar contraseñas. Las pruebas del inventario continúan aisladas de la base compartida. Para comprobar las herramientas incluidas: `docker compose exec app php -v` y `docker compose exec app composer --version`.
 
 ## Organización, Git y entregas
 
@@ -207,5 +216,6 @@ No aplica todavía: no se ha cerrado v1.0. Después de esa etiqueta, los cambios
 ## Referencias
 
 - [Laravel 13](https://laravel.com/docs/13.x)
+- [Docker Compose](https://docs.docker.com/compose/)
 - [Conexión PostgreSQL de Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres)
 - [Seguridad de la Data API](https://supabase.com/docs/guides/api/securing-your-api)

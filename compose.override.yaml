@@ -1,0 +1,5 @@
+services:
+  app:
+    user: "${LOCAL_UID:-1000}:${LOCAL_GID:-1000}"
+    volumes:
+      - .:/app
