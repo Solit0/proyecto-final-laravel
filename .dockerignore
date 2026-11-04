@@ -1,0 +1,14 @@
+.git
+.env
+.env.*
+!.env.example
+vendor
+node_modules
+public/storage
+storage/app/private
+storage/app/public
+storage/framework
+storage/logs
+.agents
+.specify
+specs
