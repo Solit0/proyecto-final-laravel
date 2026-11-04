@@ -1,21 +1,5 @@
 # Inventario de laboratorios de cómputo
 
-Proyecto final de **Desarrollo Web con Software Libre**, Universidad Católica de El Salvador. **Caso 4:** gestión de equipos, laboratorios y mantenimientos.
-
-- **Fase 1:** base de datos, modelos, datos de prueba, listado y ficha de equipos.
-- **Fase 2:** CRUD, validaciones, imágenes, mantenimientos y reportes.
-
-Actualmente están preparados el entorno y las semillas. Las migraciones, modelos y pantallas del negocio siguen pendientes de integración.
-
-## Equipo
-
-| Integrante | GitHub | Responsabilidad |
-|---|---|---|
-| Harry | [damian-sh](https://github.com/damian-sh) | Entorno, semillas, documentación, imágenes y reportes |
-| Miguel | Pendiente | Migraciones, modelos Laboratorio/Mantenimiento y mantenimientos |
-| David | [Solit0](https://github.com/Solit0) | Modelo Equipo, rutas, consultas y CRUD |
-| Alfredo | [senmontoya](https://github.com/senmontoya) | Vistas Blade, estilos y formularios |
-
 ## Requisitos
 
 Docker con Compose v2, Git y acceso a Internet para conectar con Supabase.
@@ -24,15 +8,15 @@ El contenedor incluye PHP 8.3.35, Composer 2.10.3 y las extensiones pdo_pgsql, p
 
 ## Instalación
 
-Clonar la rama de trabajo:
+Clonar el repositorio:
 
 ```sh
-git clone --branch chore/harry-fase-1 https://github.com/Solit0/proyecto-final-laravel.git
+git clone https://github.com/Solit0/proyecto-final-laravel.git
 cd proyecto-final-laravel
 cp .env.example .env
 ```
 
-Completar `DB_PASSWORD` en `.env` con la contraseña compartida por el equipo. La plantilla incluye la conexión al Session pooler de Supabase; conservar `DB_SSLMODE=require`. No subir `.env` a Git. Si ya existe, conservarlo.
+Completar `DB_PASSWORD` en `.env` con la contraseña compartida por el equipo. La plantilla incluye la conexión al Session pooler de Supabase; conservar `DB_SSLMODE=require`.
 
 ```sh
 docker compose build app
