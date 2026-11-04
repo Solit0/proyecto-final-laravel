@@ -10,14 +10,14 @@ Repositorio: [Solit0/proyecto-final-laravel](https://github.com/Solit0/proyecto-
 |---|---|---|
 | Harry | [damian-sh](https://github.com/damian-sh) | Entorno, semillas, documentación; imágenes y reportes en Fase 2 |
 | Miguel | Pendiente de confirmar | Migraciones, modelos Laboratorio/Mantenimiento y módulo de mantenimientos |
-| David | Pendiente de confirmar | Modelo Equipo, consultas, rutas y CRUD de equipos |
-| Alfredo | Pendiente de confirmar | Layout, vistas, formularios, estilos y capturas |
+| David | [Solit0](https://github.com/Solit0) | Modelo Equipo, consultas, rutas y CRUD de equipos |
+| Alfredo | [senmontoya](https://github.com/senmontoya) | Layout, vistas, formularios, estilos y capturas |
 
-El propietario del repositorio es Solit0; no se presupone a qué integrante corresponde esa cuenta. Cada persona debe confirmar su usuario y aportar desde su propia cuenta. La invitación de la docente y los demás colaboradores debe comprobarse en GitHub.
+David es propietario del repositorio. Harry y Alfredo tienen permiso de escritura, comprobado en GitHub; sus perfiles públicos identifican a David Solito y Alfredo Montoya. El usuario de Miguel y el de la docente quedan pendientes por acuerdo del equipo; David debe gestionar las invitaciones pendientes desde la cuenta propietaria. Cada persona debe aportar desde su propia cuenta.
 
 ## Estado de esta entrega
 
-Esta es la **base de la Fase 1 de Harry**, no la Fase 1 completa del equipo.
+Los entregables de entorno, semillas y documentación de Harry están implementados. Su aceptación integrada sigue pendiente de las migraciones, modelos y pantallas del equipo.
 
 | Componente | Estado |
 |---|---|
@@ -30,6 +30,18 @@ Esta es la **base de la Fase 1 de Harry**, no la Fase 1 completa del equipo.
 | Listado, ficha, layout e imagen predeterminada | Pendientes de David y Alfredo |
 | Clon completo con listado y ficha | Pendiente de integrar módulos del negocio |
 | Colaboradores, aportes en días distintos y etiqueta v1.0 | Pendientes de comprobar/completar con el equipo |
+
+Comprobaciones de Harry realizadas el **4 de noviembre de 2026**:
+
+- [x] Laravel arranca en Docker; `/` y `/up` responden HTTP 200 en el puerto 8080.
+- [x] Conexión real a PostgreSQL 17.11 de Supabase desde el contenedor, con `sslmode=require`.
+- [x] Factory y seeders: 8 pruebas aprobadas, 534 aserciones; las pruebas usan SQLite en memoria.
+- [x] Instalación con Docker ensayada desde una copia limpia, sin PHP ni Composer locales.
+- [x] `.env` privado con permisos 600; credenciales, vendor y herramientas de planificación fuera de los archivos versionados.
+- [x] Aportes propios con Conventional Commits en los días 3 y 4 de noviembre; se supera el mínimo individual de 3 commits.
+- [ ] Aplicar las migraciones definitivas y sembrar la base compartida cuando Miguel y David entreguen sus archivos.
+- [ ] Repetir el ensayo completo con listado y ficha cuando David y Alfredo integren sus pantallas.
+- [ ] Comprobar las instalaciones de los otros tres integrantes y completar las invitaciones pendientes.
 
 Por ahora `/` muestra la bienvenida original de Laravel y `/up` permite comprobar el arranque. `/equipos` estará disponible cuando David integre sus rutas y controlador. No se crea `v1.0` mientras falten los requisitos del equipo.
 
@@ -111,6 +123,8 @@ docker compose exec app php artisan migrate --seed --no-interaction
 ```
 
 Los demás integrantes actualizan el repositorio y consultan esa misma base; no deben ejecutar migraciones o seeders de forma simultánea. `DatabaseSeeder` informa claramente si falta una de las tablas del negocio antes de insertar datos. Las filas de ejemplo se conservan al repetir los seeders: códigos existentes no se sobrescriben y los mantenimientos de ejemplo no se duplican.
+
+Antes de ejecutar ese comando, deben estar integradas las migraciones de `laboratorios`, `equipos` y `mantenimientos`, los modelos con sus relaciones y la conexión de `Equipo` con `EquipoFactory`. Después, comprobar los datos esperados: **3 laboratorios, 15 equipos y 3 mantenimientos** en una base vacía. Si hay datos anteriores, no reiniciar la base para forzar esos totales. Abrir `/equipos`, cambiar de página y consultar una ficha con laboratorio e historial; repetir la instalación con los cuatro integrantes. Este ensayo pendiente es el que cierra la aceptación de las semillas y del README de Harry.
 
 ### Reinicio exclusivo de datos de prueba
 
