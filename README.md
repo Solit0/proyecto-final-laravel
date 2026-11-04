@@ -23,7 +23,7 @@ Esta es la **base de la Fase 1 de Harry**, no la Fase 1 completa del equipo.
 |---|---|
 | Laravel 13, configuración local y ejemplo PostgreSQL/SSL | Preparado |
 | Factory y seeders de 3 laboratorios, 15 equipos y 3 mantenimientos | Implementados y comprobados con contrato de pruebas |
-| README y planificación con Spec Kit | Preparados |
+| README de instalación y reparto del trabajo | Preparado |
 | Proyecto Supabase | Creado y verificado: inventario-laboratorios, organización idk, región us-east-1 |
 | Conexión real desde Laravel | Verificada con PHP 8.3 y pdo_pgsql en el entorno de verificación; falta habilitar pdo_pgsql en el PHP del sistema |
 | Migraciones definitivas y modelos del negocio | Pendientes de Miguel y David |
@@ -151,7 +151,7 @@ erDiagram
     }
 ```
 
-Detalles, longitudes, valores y relaciones: [data-model.md](specs/001-inventario-laboratorios/data-model.md). Se acordó impedir borrar laboratorios con equipos y equipos con historial usando FK con `restrictOnDelete`. Un equipo con historial se puede marcar de baja.
+El contrato acordado usa código de inventario de 8 caracteres, marca/modelo/serie de hasta 100, nombre de laboratorio de hasta 100, ubicación y técnico de hasta 150, fechas de tipo date y costos decimal(10,2) no negativos. Capacidad es un entero positivo; solo imagen admite null entre los campos del negocio. Se acordó impedir borrar laboratorios con equipos y equipos con historial usando FK con `restrictOnDelete`. Un equipo con historial se puede marcar de baja.
 
 ## Datos de prueba y reglas
 
@@ -198,10 +198,6 @@ La salida JSON evita que esta comprobación requiera la extensión intl para for
 
 Cada integrante debe mantener autoría real, usar Conventional Commits y trabajar en ramas con pull requests. Fase 1 exige al menos 12 commits, 3 por persona, en 2 días distintos; Fase 2 exige al menos 20 adicionales, 5 por persona, en 3 días distintos. Crear varios commits hoy no sustituye el requisito de días distintos. Las etiquetas corresponden al sistema completo, no a una sola persona.
 
-Constitución: [.specify/memory/constitution.md](.specify/memory/constitution.md). Especificación: [spec.md](specs/001-inventario-laboratorios/spec.md). Plan: [plan.md](specs/001-inventario-laboratorios/plan.md). Pendientes y responsables: [tasks.md](specs/001-inventario-laboratorios/tasks.md).
-
-Spec Kit está inicializado con integración Codex; no hace falta instalarlo para ejecutar Laravel. Sus instrucciones de trabajo están en `.agents/skills` y su configuración en `.specify`.
-
 Las capturas de pantallas del negocio se agregarán tras integrar las vistas. Las etiquetas [CONCEPTO] se colocan como comentarios en el código real que demuestra cada concepto, no como una lista que simule implementación.
 
 ## Cambios respecto a Fase 1
@@ -213,4 +209,3 @@ No aplica todavía: no se ha cerrado v1.0. Después de esa etiqueta, los cambios
 - [Laravel 13](https://laravel.com/docs/13.x)
 - [Conexión PostgreSQL de Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres)
 - [Seguridad de la Data API](https://supabase.com/docs/guides/api/securing-your-api)
-- [Spec Kit](https://github.com/github/spec-kit)
