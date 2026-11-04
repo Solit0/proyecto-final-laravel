@@ -100,4 +100,4 @@ El personal revisa distribución, costos y ausencia de mantenimiento reciente.
 - Borrado restringido para laboratorios con equipos y equipos con historial; estos últimos pueden marcarse de baja.
 - Catálogo precargado; sin CRUD adicional del catálogo, login, exportaciones ni hosting.
 - Fechas acordadas: 5 y 12 de noviembre de 2026.
-- El proyecto de base de datos en la nube todavía no existe; su creación y conexión son dependencias externas pendientes.
+- El proyecto inventario-laboratorios ya existe en idk, con referencia rdwfytkqjlvturwfedbg. La conexión de Laravel se verificó con PHP 8.3 y SSL requerido; falta habilitar pdo_pgsql en el PHP del sistema e integrar las migraciones del negocio.

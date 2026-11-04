@@ -13,7 +13,7 @@ Requiere pdo_sqlite; las pruebas fuerzan memoria y no usan la base compartida. R
 ## Integración definitiva pendiente
 
 1. Miguel agrega migraciones y modelos; David agrega Equipo, consultas y rutas; Alfredo agrega layout, listado y ficha.
-2. Harry crea/configura el proyecto Supabase compartido y confirma colaboradores.
+2. Harry habilita pdo_pgsql local, utiliza el .env privado del proyecto Supabase ya creado y confirma colaboradores; puede comprobar conexión con `php artisan db:show --database=pgsql --json --no-interaction`.
 3. Harry coordina `php artisan migrate --seed --no-interaction`.
 4. Un compañero instala con el README y comprueba dos páginas del listado, ficha, laboratorio e historial.
 5. Solo sobre datos de prueba acordados, Harry demuestra `php artisan migrate:fresh --seed --no-interaction` con las migraciones definitivas.

@@ -15,7 +15,7 @@ Implementar el caso 4 en un único proyecto Laravel 13 con Blade, CSS propio y S
 - **Target Platform**: Computadoras del equipo, `php artisan serve`; sin hosting ni servicios adicionales para ejecutar la aplicación.
 - **Project Type**: Aplicación MVC con renderizado Blade, sin API separada.
 - **Performance Goals**: Paginación de 10 equipos y relaciones precargadas; sin consultas por fila en las vistas.
-- **Constraints**: Base compartida; reinicios solo coordinados por Harry. Credenciales fuera de Git. El proyecto Supabase aún debe crearse.
+- **Constraints**: Base compartida; reinicios solo coordinados por Harry. Credenciales fuera de Git. Supabase ya está creado y la conexión de Laravel verificada; falta habilitar pdo_pgsql en el PHP del sistema.
 - **Scale/Scope**: Tres tablas del negocio, al menos 15 equipos y 3 laboratorios; 4 integrantes y 2 entregas.
 
 ## Constitution Check
@@ -48,7 +48,7 @@ Revisión previa y posterior al diseño: sin excepciones a estos acuerdos.
 
 1. Harry prepara proyecto, configuración, factory/seeders y README; los verifica sin depender de los módulos pendientes.
 2. Miguel agrega las migraciones reales y sus modelos; David incorpora Equipo y consultas; Alfredo integra layout, listado y ficha.
-3. Harry configura Supabase cuando exista, coordina migraciones y semillas y verifica el clon completo. Solo entonces corresponde evaluar v1.0.
+3. Harry completa la habilitación del controlador PostgreSQL local, coordina migraciones/semillas sobre el proyecto Supabase ya creado y verifica el clon completo. Solo entonces corresponde evaluar v1.0.
 4. En Fase 2 se implementan CRUD, imágenes, mantenimientos y reportes con los contratos acordados. Cambios de esquema posteriores requieren nuevas migraciones.
 
 ## Complexity Tracking

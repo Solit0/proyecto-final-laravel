@@ -7,7 +7,7 @@ Los identificadores H/M/D/A-F1/F2 corresponden a las guías individuales acordad
 ## Phase 1: Setup — Harry
 
 - [x] T001 Harry / H-F1-01: crear Laravel 13 y configurar PHP 8.3, zona horaria, sesión/caché local y ejemplo PostgreSQL/SSL en `composer.json`, `config/app.php` y `.env.example`.
-- [ ] T002 Harry / H-F1-01: crear Supabase, desactivar Data API y configurar/probar los datos reales del Session pooler en `.env`, sin subir credenciales.
+- [ ] T002 Harry / H-F1-01: terminar la habilitación de pdo_pgsql en el PHP local y revisar el interruptor Data API del panel. Proyecto Supabase y usuario Laravel ya creados; conexión Session pooler comprobada desde Laravel con PHP 8.3 y SSL requerido. Credencial guardada únicamente en `.env`.
 - [ ] T003 Harry / H-F1-01: confirmar usuarios y colaboradores de GitHub, incluida la docente, y completar la tabla de integrantes en `README.md`.
 - [x] T004 Harry / H-F1-03: inicializar Spec Kit y registrar constitución, especificación, plan y reparto en `.specify/memory/constitution.md` y `specs/001-inventario-laboratorios/`.
 

@@ -8,7 +8,7 @@
 
 ## Supabase como PostgreSQL
 
-**Decisión:** Session pooler, host/usuario copiados de Connect, puerto 5432 y SSL obligatorio.
+**Decisión:** Session pooler, host copiado de Connect, usuario exclusivo laravel_app, puerto 5432 y SSL obligatorio. La credencial permanece solo en el .env privado; public no permite acceso a PUBLIC, anon ni authenticated.
 **Razón:** conexión IPv4 y compatibilidad con conexiones PDO habituales. Desactivar Data API porque no existe un cliente REST/GraphQL.
 **Alternativa descartada:** Transaction pooler 6543, innecesario para este proceso local y con diferencias de prepared statements.
 **Fuente:** [conexiones Supabase](https://supabase.com/docs/guides/database/connecting-to-postgres), [Data API](https://supabase.com/docs/guides/api/securing-your-api).
@@ -31,4 +31,6 @@
 
 ## Pendientes externos
 
-Crear Supabase y configurar .env, habilitar pdo_pgsql en el PHP del sistema, confirmar colaboradores y usuarios, integrar migraciones/modelos/vistas y comprobar aportes en días distintos. Son tareas abiertas, no decisiones técnicas sin resolver.
+Supabase ya se creó en idk, región us-east-1, referencia rdwfytkqjlvturwfedbg, con costo de creación confirmado de US$0 al mes. Laravel autenticó como laravel_app con SSL requerido desde el entorno PHP 8.3 con pdo_pgsql. El proyecto estaba saludable y sin avisos de seguridad; el esquema public no contiene tablas del negocio.
+
+Pendiente: habilitar pdo_pgsql en el PHP del sistema, desactivar opcionalmente el interruptor Data API del panel, confirmar colaboradores y usuarios, integrar migraciones/modelos/vistas y comprobar aportes en días distintos.

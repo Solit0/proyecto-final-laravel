@@ -24,13 +24,18 @@ Esta es la **base de la Fase 1 de Harry**, no la Fase 1 completa del equipo.
 | Laravel 13, configuración local y ejemplo PostgreSQL/SSL | Preparado |
 | Factory y seeders de 3 laboratorios, 15 equipos y 3 mantenimientos | Implementados y comprobados con contrato de pruebas |
 | README y planificación con Spec Kit | Preparados |
-| Proyecto Supabase y conexión real | Pendientes de creación y configuración |
+| Proyecto Supabase | Creado y verificado: inventario-laboratorios, organización idk, región us-east-1 |
+| Conexión real desde Laravel | Verificada con PHP 8.3 y pdo_pgsql en el entorno de verificación; falta habilitar pdo_pgsql en el PHP del sistema |
 | Migraciones definitivas y modelos del negocio | Pendientes de Miguel y David |
 | Listado, ficha, layout e imagen predeterminada | Pendientes de David y Alfredo |
-| Clon completo con listado y ficha | Pendiente de integrar módulos y Supabase |
+| Clon completo con listado y ficha | Pendiente de integrar módulos del negocio |
 | Colaboradores, aportes en días distintos y etiqueta v1.0 | Pendientes de comprobar/completar con el equipo |
 
 Por ahora `/` muestra la bienvenida original de Laravel y `/up` permite comprobar el arranque. `/equipos` estará disponible cuando David integre sus rutas y controlador. No se crea `v1.0` mientras falten los requisitos del equipo.
+
+Proyecto compartido: [inventario-laboratorios en Supabase](https://supabase.com/dashboard/project/rdwfytkqjlvturwfedbg). Organización **idk**, plan Free; creación autorizada con costo indicado de **US$0 al mes**. Su referencia es `rdwfytkqjlvturwfedbg` y utiliza PostgreSQL 17.11.
+
+Se creó el usuario `laravel_app` para Laravel, sin privilegios de superusuario, creación de bases, creación de roles ni bypass de RLS. Puede conectar y crear las tablas del negocio en public mediante las futuras migraciones de Laravel. El esquema public no permite acceso a PUBLIC, anon ni authenticated; el interruptor Data API del panel no se ha desactivado mediante el conector. No se crearon las tablas del negocio fuera de Laravel.
 
 Fase 1: presentación acordada para el **5 de noviembre de 2026**. Fase 2: **12 de noviembre de 2026**, sobre este mismo repositorio; agregará CRUD completo, formularios, imágenes, reglas y reportes. No se despliega en hosting.
 
@@ -62,21 +67,21 @@ php artisan key:generate --no-interaction
 
 En PowerShell se puede reemplazar `cp .env.example .env` por `Copy-Item .env.example .env`.
 
-Completar únicamente el `.env` local con los datos de **Supabase → Connect → Session pooler**:
+El `.env.example` ya contiene el Host de **Supabase → Connect → Session pooler** que confirmó el equipo y el usuario exclusivo de Laravel. Completar únicamente la contraseña en el `.env` local, compartida por un canal privado:
 
 ```dotenv
 DB_CONNECTION=pgsql
-DB_HOST=HOST_COPIADO_DESDE_CONNECT
+DB_HOST=aws-0-us-east-1.pooler.supabase.com
 DB_PORT=5432
 DB_DATABASE=postgres
-DB_USERNAME=USUARIO_COPIADO_DESDE_CONNECT
-DB_PASSWORD="CONTRASENA_PRIVADA_DEL_PROYECTO"
+DB_USERNAME=laravel_app.rdwfytkqjlvturwfedbg
+DB_PASSWORD="CONTRASENA_PRIVADA_DEL_USUARIO_LARAVEL"
 DB_SSLMODE=require
 ```
 
-El host y el usuario se copian completos, no se construyen a partir de la región. Session pooler permite conexión por IPv4; no confundirlo con Transaction pooler de puerto 6543. Mantener `DB_SSLMODE=require` para Supabase.
+El Host se copió completo desde Connect; no se construyó a partir de la región. El usuario `laravel_app` reemplaza el usuario administrativo que el panel muestra por defecto. Session pooler permite conexión por IPv4; no confundirlo con Transaction pooler de puerto 6543. Mantener `DB_SSLMODE=require` para Supabase.
 
-Como Supabase se usa únicamente como motor PostgreSQL desde Laravel, desactivar **Enable Data API** en la configuración del proyecto dedicado. Las tablas del negocio se crean con migraciones de Laravel, nunca con el editor de tablas del panel. Compartir contraseña por un canal privado, nunca por GitHub.
+Como Supabase se usa únicamente como motor PostgreSQL desde Laravel, se recomienda desactivar **Enable Data API** desde la configuración del proyecto dedicado. El conector ya permitió restringir el acceso al esquema public; no se afirma que haya cambiado ese interruptor del panel. Las tablas del negocio se crean con migraciones de Laravel, nunca con el editor de tablas. La contraseña de Laravel se generó localmente y permanece únicamente en `.env`; no se versiona ni aparece en la documentación.
 
 La configuración local usa zona horaria `America/El_Salvador`, sesiones y caché en archivos y cola síncrona. No requiere Redis ni procesos de colas.
 
@@ -86,7 +91,7 @@ php artisan storage:link --no-interaction
 php artisan serve
 ```
 
-Abrir [http://localhost:8000](http://localhost:8000). Esto permite comprobar la bienvenida de Laravel incluso antes de crear Supabase. Los seeders no pueden ejecutarse todavía sobre la estructura definitiva porque faltan las migraciones del negocio.
+Abrir [http://localhost:8000](http://localhost:8000). Esto permite comprobar la bienvenida de Laravel sin consultar tablas del negocio. Los seeders no pueden ejecutarse todavía sobre la estructura definitiva porque faltan esas migraciones.
 
 ### Cuando Miguel entregue las migraciones definitivas
 
@@ -174,7 +179,15 @@ Las pruebas ordinarias fuerzan SQLite en memoria y anulan DB_URL; no leen ni lim
 
 Se verifican arranque, datos mínimos, identificadores, fechas, repetición sin duplicados, conservación de equipos editados, rechazo de estructura incompleta, rollback de semillas y exclusión de equipos dados de baja.
 
-Validación de esta entrega: PHP 8.3, 8 pruebas pasadas; además, seeders comprobados dos veces sobre PostgreSQL 16 aislado con fixtures, obteniendo 3 laboratorios, 15 equipos, 3 mantenimientos y cero mantenimientos inválidos. La conexión real a Supabase y el ensayo completo de listado/ficha siguen pendientes.
+Validación de esta entrega: PHP 8.3, 8 pruebas pasadas; además, seeders comprobados dos veces sobre PostgreSQL 16 aislado con fixtures, obteniendo 3 laboratorios, 15 equipos, 3 mantenimientos y cero mantenimientos inválidos. La conexión real a Supabase se comprobó mediante Laravel con `sslmode=require`, base postgres y rol laravel_app. El chequeo de seguridad de Supabase no reportó avisos. El ensayo completo de listado/ficha sigue pendiente de los módulos del equipo.
+
+Para volver a comprobar la conexión, después de habilitar pdo_pgsql y configurar el `.env` privado:
+
+```sh
+php artisan db:show --database=pgsql --json --no-interaction
+```
+
+La salida JSON evita que esta comprobación requiera la extensión intl para formatear tamaños. Las pruebas del inventario continúan aisladas de la base compartida.
 
 ## Organización, Git y entregas
 
