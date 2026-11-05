@@ -2,7 +2,9 @@
 
 namespace App\Models;
 
+use Carbon\Carbon;
 use Database\Factories\EquipoFactory;
+use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -21,14 +23,14 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
  * @property string $marca
  * @property string $modelo
  * @property string $numero_serie
- * @property \Carbon\Carbon $fecha_adquisicion
+ * @property Carbon $fecha_adquisicion
  * @property string $costo
  * @property string $estado
  * @property string|null $imagen
- * @property \Carbon\Carbon|null $created_at
- * @property \Carbon\Carbon|null $updated_at
- * @property-read \App\Models\Laboratorio $laboratorio
- * @property-read \Illuminate\Database\Eloquent\Collection<int, \App\Models\Mantenimiento> $mantenimientos
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property-read Laboratorio $laboratorio
+ * @property-read Collection<int, Mantenimiento> $mantenimientos
  */
 class Equipo extends Model
 {

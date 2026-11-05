@@ -20,17 +20,38 @@ class EquipoController extends Controller
 {
     /**
      * [CRUD-READ] Listado paginado de 10 en 10 ordenado por código de inventario,
-     * precargando el laboratorio de cada equipo.
+     * con búsqueda insensible a mayúsculas y filtros acumulativos por laboratorio y estado.
      */
     public function index(Request $request): View
     {
-        $equipos = Equipo::query()
-            ->with('laboratorio')
-            ->orderBy('codigo_inventario')
-            ->paginate(10);
+        $query = Equipo::query()->with('laboratorio');
+
+        // Búsqueda por q sobre código, marca o modelo agrupando los OR
+        if ($request->filled('q')) {
+            $busqueda = '%'.mb_strtolower(trim((string) $request->input('q'))).'%';
+            $query->where(function ($subQuery) use ($busqueda): void {
+                $subQuery->whereRaw('LOWER(codigo_inventario) LIKE ?', [$busqueda])
+                    ->orWhereRaw('LOWER(marca) LIKE ?', [$busqueda])
+                    ->orWhereRaw('LOWER(modelo) LIKE ?', [$busqueda]);
+            });
+        }
+
+        // Filtro por laboratorio
+        if ($request->filled('laboratorio_id')) {
+            $query->where('laboratorio_id', $request->integer('laboratorio_id'));
+        }
+
+        // Filtro por estado válido
+        if ($request->filled('estado') && in_array($request->input('estado'), Equipo::ESTADOS, true)) {
+            $query->where('estado', $request->input('estado'));
+        }
+
+        $equipos = $query->orderBy('codigo_inventario')->paginate(10)->withQueryString();
+        $laboratorios = Laboratorio::query()->orderBy('nombre')->get();
 
         return view('equipos.index', [
             'equipos' => $equipos,
+            'laboratorios' => $laboratorios,
         ]);
     }
 
@@ -43,7 +64,7 @@ class EquipoController extends Controller
 
         return view('equipos.create', [
             'laboratorios' => $laboratorios,
-            'equipo' => new Equipo(),
+            'equipo' => new Equipo,
         ]);
     }
 
@@ -117,7 +138,7 @@ class EquipoController extends Controller
                 $nuevaAdquisicion = Carbon::parse($datos['fecha_adquisicion'])->startOfDay();
                 if ($nuevaAdquisicion->gt($mantenimientoMasAntiguo->fecha)) {
                     throw ValidationException::withMessages([
-                        'fecha_adquisicion' => 'La fecha de adquisición no puede ser posterior al mantenimiento más antiguo del equipo (' . $mantenimientoMasAntiguo->fecha->format('d/m/Y') . ').',
+                        'fecha_adquisicion' => 'La fecha de adquisición no puede ser posterior al mantenimiento más antiguo del equipo ('.$mantenimientoMasAntiguo->fecha->format('d/m/Y').').',
                     ]);
                 }
             }
