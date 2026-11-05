@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StoreEquipoRequest;
 use App\Models\Equipo;
+use App\Models\Laboratorio;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -22,6 +25,38 @@ class EquipoController extends Controller
         return view('equipos.index', [
             'equipos' => $equipos,
         ]);
+    }
+
+    /**
+     * [CRUD-READ] Formulario de registro con laboratorios ordenados y equipo vacío.
+     */
+    public function create(): View
+    {
+        $laboratorios = Laboratorio::query()->orderBy('nombre')->get();
+
+        return view('equipos.create', [
+            'laboratorios' => $laboratorios,
+            'equipo' => new Equipo(),
+        ]);
+    }
+
+    /**
+     * [CRUD-CREATE] [SEGURIDAD] [INYECCION-DEPENDENCIAS]
+     * Registra un nuevo equipo usando únicamente datos validados y gestionando la fotografía.
+     */
+    public function store(StoreEquipoRequest $request): RedirectResponse
+    {
+        $datos = $request->validated();
+
+        if ($request->hasFile('imagen')) {
+            $datos['imagen'] = $request->file('imagen')->store('equipos', 'public');
+        }
+
+        $equipo = Equipo::query()->create($datos);
+
+        return redirect()
+            ->route('equipos.show', $equipo)
+            ->with('exito', 'Equipo registrado correctamente.');
     }
 
     /**
