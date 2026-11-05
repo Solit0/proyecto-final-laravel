@@ -25,11 +25,15 @@ class EquipoController extends Controller
     }
 
     /**
-     * [CRUD-READ] Ficha de detalle del equipo.
+     * [CRUD-READ] Ficha de detalle con carga optimizada del laboratorio e historial
+     * de mantenimientos ordenado descendentemente por fecha.
      */
     public function show(Equipo $equipo): View
     {
-        $equipo->load('laboratorio');
+        $equipo->load([
+            'laboratorio',
+            'mantenimientos' => fn ($query) => $query->orderByDesc('fecha')->orderByDesc('id'),
+        ]);
 
         return view('equipos.show', [
             'equipo' => $equipo,
