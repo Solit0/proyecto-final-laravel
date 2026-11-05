@@ -7,12 +7,14 @@ use App\Http\Requests\UpdateEquipoRequest;
 use App\Models\Equipo;
 use App\Models\Laboratorio;
 use Carbon\Carbon;
+use Illuminate\Database\QueryException;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
+use LogicException;
 
 class EquipoController extends Controller
 {
@@ -137,5 +139,39 @@ class EquipoController extends Controller
         return redirect()
             ->route('equipos.show', $equipo)
             ->with('exito', 'Equipo actualizado correctamente.');
+    }
+
+    /**
+     * [CRUD-DELETE] [REGLA-NEGOCIO]
+     * Elimina el equipo únicamente si no tiene historial de mantenimientos.
+     * Protege contra concurrencia con lockForUpdate y captura de QueryException.
+     * Solo borra la imagen física si la eliminación del registro fue efectiva.
+     */
+    public function destroy(Equipo $equipo): RedirectResponse
+    {
+        try {
+            DB::transaction(function () use ($equipo): void {
+                $equipoBloqueado = Equipo::query()->lockForUpdate()->findOrFail($equipo->id);
+
+                if ($equipoBloqueado->mantenimientos()->exists()) {
+                    throw new LogicException('tiene_historial');
+                }
+
+                $rutaImagen = $equipoBloqueado->imagen;
+                $equipoBloqueado->delete();
+
+                if ($rutaImagen && Storage::disk('public')->exists($rutaImagen)) {
+                    Storage::disk('public')->delete($rutaImagen);
+                }
+            });
+        } catch (LogicException|QueryException) {
+            return redirect()
+                ->route('equipos.index')
+                ->with('error', 'No se puede eliminar porque tiene historial; puede marcarse de baja.');
+        }
+
+        return redirect()
+            ->route('equipos.index')
+            ->with('exito', 'Equipo eliminado correctamente.');
     }
 }
