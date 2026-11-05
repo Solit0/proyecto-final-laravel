@@ -1,0 +1,784 @@
+/* ==========================================================================
+   ESTILOS GENERALES DEL SISTEMA - INVENTARIO DE LABORATORIOS DE CÓMPUTO
+   Autor: Alfredo Montoya
+   Tecnología: CSS propio, accesible, adaptativo y sin dependencias externas
+   ========================================================================== */
+
+:root {
+    --color-primario: #0b5cad;
+    --color-primario-hover: #094a8f;
+    --color-primario-suave: #ebf4fc;
+    --color-fondo: #f4f6f8;
+    --color-superficie: #ffffff;
+    --color-texto: #1e293b;
+    --color-texto-secundario: #64748b;
+    --color-borde: #cbd5e1;
+    --color-borde-suave: #e2e8f0;
+
+    /* Estados de equipos */
+    --color-operativo-fondo: #dcfce7;
+    --color-operativo-texto: #15803d;
+    --color-operativo-borde: #86efac;
+
+    --color-reparacion-fondo: #fef3c7;
+    --color-reparacion-texto: #b45309;
+    --color-reparacion-borde: #fde68a;
+
+    --color-baja-fondo: #fee2e2;
+    --color-baja-texto: #b91c1c;
+    --color-baja-borde: #fca5a5;
+
+    /* Tipografía y bordes */
+    --fuente-base: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --radio-borde: 0.5rem;
+    --radio-sm: 0.35rem;
+    --sombra-tarjeta: 0 1px 3px rgba(15, 23, 42, 0.08), 0 1px 2px rgba(15, 23, 42, 0.04);
+    --sombra-elevada: 0 4px 6px -1px rgba(15, 23, 42, 0.1), 0 2px 4px -2px rgba(15, 23, 42, 0.06);
+}
+
+/* --------------------------------------------------------------------------
+   Reseteo accesible y base
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+html {
+    font-size: 16px;
+    scroll-behavior: smooth;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--color-fondo);
+    color: var(--color-texto);
+    font-family: var(--fuente-base);
+    line-height: 1.5;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Foco de teclado accesible con alto contraste */
+*:focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+}
+
+a {
+    color: var(--color-primario);
+    text-decoration: none;
+    transition: color 0.15s ease-in-out;
+}
+
+a:hover {
+    color: var(--color-primario-hover);
+    text-decoration: underline;
+}
+
+/* --------------------------------------------------------------------------
+   Layout principal: Encabezado, Navegación y Pie
+   -------------------------------------------------------------------------- */
+.encabezado-sistema {
+    background-color: var(--color-superficie);
+    border-bottom: 1px solid var(--color-borde);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.barra-superior {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.75rem 1rem;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+}
+
+.marca-sistema {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    color: var(--color-texto);
+    font-size: 1.15rem;
+    font-weight: 700;
+    text-decoration: none;
+}
+
+.marca-sistema:hover {
+    text-decoration: none;
+    color: var(--color-primario);
+}
+
+.marca-sistema .icono-marca {
+    width: 2rem;
+    height: 2rem;
+    color: var(--color-primario);
+}
+
+.navegacion-principal {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.enlace-nav {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.45rem 0.85rem;
+    border-radius: var(--radio-sm);
+    color: var(--color-texto-secundario);
+    font-size: 0.92rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background-color 0.15s, color 0.15s;
+}
+
+.enlace-nav:hover {
+    background-color: var(--color-fondo);
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+.enlace-nav.activo {
+    background-color: var(--color-primario-suave);
+    color: var(--color-primario);
+}
+
+.contenedor-principal {
+    max-width: 1200px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 1.75rem 1rem 3rem;
+    flex: 1;
+}
+
+.pie-pagina {
+    background-color: var(--color-superficie);
+    border-top: 1px solid var(--color-borde-suave);
+    padding: 1.5rem 1rem;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--color-texto-secundario);
+    margin-top: auto;
+}
+
+/* --------------------------------------------------------------------------
+   Encabezados de página y acciones
+   -------------------------------------------------------------------------- */
+.cabecera-pagina {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.cabecera-titulos h1 {
+    margin: 0;
+    font-size: 1.65rem;
+    font-weight: 700;
+    color: var(--color-texto);
+}
+
+.cabecera-titulos p {
+    margin: 0.3rem 0 0;
+    color: var(--color-texto-secundario);
+    font-size: 0.93rem;
+}
+
+.cabecera-acciones {
+    display: flex;
+    align-items: center;
+    gap: 0.65rem;
+    flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Botones reutilizables
+   -------------------------------------------------------------------------- */
+.boton {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.58rem 1rem;
+    border-radius: var(--radio-sm);
+    background-color: var(--color-primario);
+    color: #ffffff;
+    font-family: inherit;
+    font-size: 0.92rem;
+    font-weight: 600;
+    line-height: 1.25;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: background-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.boton:hover {
+    background-color: var(--color-primario-hover);
+    color: #ffffff;
+    text-decoration: none;
+}
+
+.boton-secundario {
+    background-color: #f1f5f9;
+    color: #334155;
+    border: 1px solid var(--color-borde);
+}
+
+.boton-secundario:hover {
+    background-color: #e2e8f0;
+    color: #0f172a;
+}
+
+.boton-peligro {
+    background-color: #dc2626;
+    color: #ffffff;
+}
+
+.boton-peligro:hover {
+    background-color: #b91c1c;
+    color: #ffffff;
+}
+
+.boton-sm {
+    padding: 0.35rem 0.65rem;
+    font-size: 0.82rem;
+}
+
+.boton-bloque {
+    width: 100%;
+}
+
+button:disabled, .boton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    pointer-events: none;
+}
+
+/* --------------------------------------------------------------------------
+   Alertas y Mensajes Flash (exito y error)
+   -------------------------------------------------------------------------- */
+.alerta, .exito, .error {
+    padding: 0.85rem 1.15rem;
+    border-radius: var(--radio-sm);
+    margin-bottom: 1.25rem;
+    font-size: 0.93rem;
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+}
+
+.alerta-exito, .exito {
+    background-color: var(--color-operativo-fondo);
+    color: var(--color-operativo-texto);
+    border: 1px solid var(--color-operativo-borde);
+}
+
+.alerta-error, .error {
+    background-color: var(--color-baja-fondo);
+    color: var(--color-baja-texto);
+    border: 1px solid var(--color-baja-borde);
+}
+
+/* --------------------------------------------------------------------------
+   Tarjetas y Bloques contenedores
+   -------------------------------------------------------------------------- */
+.tarjeta {
+    background-color: var(--color-superficie);
+    border-radius: var(--radio-borde);
+    border: 1px solid var(--color-borde-suave);
+    box-shadow: var(--sombra-tarjeta);
+    padding: 1.5rem;
+    margin-bottom: 1.75rem;
+}
+
+.tarjeta-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 1.25rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--color-borde-suave);
+}
+
+/* Grid de datos en ficha */
+.grid-datos {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+    flex: 1;
+}
+
+.dato-item {
+    font-size: 0.92rem;
+}
+
+.dato-label {
+    color: var(--color-texto-secundario);
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    font-weight: 700;
+    margin-bottom: 0.25rem;
+}
+
+.dato-valor {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--color-texto);
+}
+
+.dato-secundario {
+    font-size: 0.83rem;
+    color: var(--color-texto-secundario);
+    font-weight: normal;
+    display: block;
+    margin-top: 0.15rem;
+}
+
+/* --------------------------------------------------------------------------
+   Tablas y desbordamiento horizontal accesible
+   -------------------------------------------------------------------------- */
+.tabla-contenedor {
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    border-radius: var(--radio-borde);
+    border: 1px solid var(--color-borde-suave);
+    background-color: var(--color-superficie);
+    box-shadow: var(--sombra-tarjeta);
+    margin-bottom: 1.5rem;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.92rem;
+    text-align: left;
+}
+
+th, td {
+    padding: 0.75rem 0.95rem;
+    border-bottom: 1px solid var(--color-borde-suave);
+    vertical-align: middle;
+}
+
+th {
+    background-color: #f8fafc;
+    font-size: 0.78rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--color-texto-secundario);
+    font-weight: 700;
+    white-space: nowrap;
+}
+
+tr:last-child td {
+    border-bottom: 0;
+}
+
+tbody tr:hover {
+    background-color: #f8fafc;
+}
+
+.acciones-tabla {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    white-space: nowrap;
+}
+
+.form-eliminar {
+    display: inline;
+    margin: 0;
+    padding: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Badges y etiquetas de estado
+   -------------------------------------------------------------------------- */
+.badge {
+    display: inline-block;
+    padding: 0.22rem 0.6rem;
+    border-radius: 9999px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    text-transform: capitalize;
+    line-height: 1;
+    border: 1px solid transparent;
+}
+
+.badge-operativo {
+    background-color: var(--color-operativo-fondo);
+    color: var(--color-operativo-texto);
+    border-color: var(--color-operativo-borde);
+}
+
+.badge-en_reparacion {
+    background-color: var(--color-reparacion-fondo);
+    color: var(--color-reparacion-texto);
+    border-color: var(--color-reparacion-borde);
+}
+
+.badge-de_baja {
+    background-color: var(--color-baja-fondo);
+    color: var(--color-baja-texto);
+    border-color: var(--color-baja-borde);
+}
+
+/* --------------------------------------------------------------------------
+   Imágenes y Miniaturas
+   -------------------------------------------------------------------------- */
+.foto-thumb {
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radio-sm);
+    object-fit: cover;
+    border: 1px solid var(--color-borde-suave);
+    background-color: #f8fafc;
+    vertical-align: middle;
+    display: block;
+}
+
+.foto-detalle {
+    width: 190px;
+    height: 190px;
+    border-radius: var(--radio-borde);
+    object-fit: cover;
+    border: 1px solid var(--color-borde);
+    background-color: #f8fafc;
+    display: block;
+}
+
+.preview-imagen {
+    margin-bottom: 0.75rem;
+    padding: 0.75rem;
+    background-color: #f8fafc;
+    border: 1px dashed var(--color-borde);
+    border-radius: var(--radio-sm);
+    display: inline-block;
+}
+
+.preview-imagen img {
+    max-height: 130px;
+    border-radius: var(--radio-sm);
+    display: block;
+}
+
+/* --------------------------------------------------------------------------
+   Formularios, campos y validaciones
+   -------------------------------------------------------------------------- */
+.formulario {
+    background-color: var(--color-superficie);
+    padding: 1.75rem;
+    border-radius: var(--radio-borde);
+    border: 1px solid var(--color-borde-suave);
+    box-shadow: var(--sombra-tarjeta);
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.campo {
+    margin-bottom: 1.2rem;
+}
+
+.campo label {
+    display: block;
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--color-texto);
+    margin-bottom: 0.35rem;
+}
+
+.campo input[type="text"],
+.campo input[type="date"],
+.campo input[type="number"],
+.campo input[type="file"],
+.campo select,
+.campo textarea {
+    width: 100%;
+    padding: 0.58rem 0.75rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    background-color: #ffffff;
+    font-family: inherit;
+    font-size: 0.95rem;
+    color: var(--color-texto);
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+    outline: none;
+    border-color: var(--color-primario);
+    box-shadow: 0 0 0 3px rgba(11, 92, 173, 0.18);
+}
+
+.campo textarea {
+    min-height: 6.5rem;
+    resize: vertical;
+}
+
+.ayuda {
+    display: block;
+    margin-top: 0.3rem;
+    font-size: 0.83rem;
+    color: var(--color-texto-secundario);
+}
+
+.mensaje-error, span.error {
+    display: block;
+    margin-top: 0.35rem;
+    color: var(--color-baja-texto);
+    font-size: 0.86rem;
+    font-weight: 600;
+}
+
+.grid-2 {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.15rem;
+}
+
+.acciones-formulario {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.85rem;
+    margin-top: 1.75rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-borde-suave);
+}
+
+/* --------------------------------------------------------------------------
+   Barra de Filtros y Búsqueda
+   -------------------------------------------------------------------------- */
+.filtros {
+    background-color: var(--color-superficie);
+    padding: 1.15rem 1.25rem;
+    border-radius: var(--radio-borde);
+    border: 1px solid var(--color-borde-suave);
+    box-shadow: var(--sombra-tarjeta);
+    margin-bottom: 1.5rem;
+}
+
+.filtros form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.85rem;
+    align-items: flex-end;
+}
+
+.filtros .campo {
+    flex: 1 1 200px;
+    margin-bottom: 0;
+}
+
+.filtros label {
+    display: block;
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin-bottom: 0.25rem;
+    color: var(--color-texto-secundario);
+}
+
+.filtros input, .filtros select {
+    width: 100%;
+    padding: 0.48rem 0.65rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    font: inherit;
+    font-size: 0.9rem;
+    background-color: #ffffff;
+}
+
+.filtros .acciones-filtro {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+/* --------------------------------------------------------------------------
+   Estados vacíos (Empty states)
+   -------------------------------------------------------------------------- */
+.vacio {
+    padding: 2.25rem 1.5rem;
+    background-color: var(--color-superficie);
+    border-radius: var(--radio-borde);
+    border: 1px dashed var(--color-borde);
+    text-align: center;
+    color: var(--color-texto-secundario);
+    margin-bottom: 1.5rem;
+}
+
+.vacio p {
+    margin: 0 0 0.75rem;
+    font-size: 1.05rem;
+}
+
+.vacio p:last-child {
+    margin-bottom: 0;
+}
+
+/* --------------------------------------------------------------------------
+   Paginación accesible
+   -------------------------------------------------------------------------- */
+.paginacion {
+    margin-top: 1.25rem;
+}
+
+.paginacion nav {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    align-items: center;
+    justify-content: center;
+}
+
+.paginacion a, .paginacion span {
+    padding: 0.38rem 0.7rem;
+    border: 1px solid var(--color-borde);
+    border-radius: var(--radio-sm);
+    background-color: var(--color-superficie);
+    color: var(--color-texto);
+    font-size: 0.88rem;
+    text-decoration: none;
+    line-height: 1.2;
+}
+
+.paginacion a:hover {
+    background-color: var(--color-primario-suave);
+    color: var(--color-primario);
+    text-decoration: none;
+}
+
+/* --------------------------------------------------------------------------
+   Panel de inicio (Dashboard cards)
+   -------------------------------------------------------------------------- */
+.grid-panel {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.tarjeta-panel {
+    background-color: var(--color-superficie);
+    border-radius: var(--radio-borde);
+    border: 1px solid var(--color-borde-suave);
+    box-shadow: var(--sombra-tarjeta);
+    padding: 1.6rem;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.tarjeta-panel:hover {
+    transform: translateY(-2px);
+    box-shadow: var(--sombra-elevada);
+}
+
+.tarjeta-panel h2 {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    color: var(--color-texto);
+}
+
+.tarjeta-panel p {
+    color: var(--color-texto-secundario);
+    font-size: 0.93rem;
+    margin: 0 0 1.25rem;
+    flex: 1;
+}
+
+.tarjeta-panel .acciones-panel {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+/* --------------------------------------------------------------------------
+   Adaptación Móvil (Responsive design)
+   -------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+    .barra-superior {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.75rem;
+    }
+
+    .navegacion-principal {
+        justify-content: space-between;
+        width: 100%;
+        overflow-x: auto;
+    }
+
+    .grid-2 {
+        grid-template-columns: 1fr;
+        gap: 0;
+    }
+
+    .tarjeta-header {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+    }
+
+    .foto-detalle {
+        width: 160px;
+        height: 160px;
+    }
+
+    .cabecera-pagina {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cabecera-acciones {
+        justify-content: stretch;
+    }
+
+    .cabecera-acciones .boton {
+        flex: 1;
+    }
+
+    .filtros form {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .filtros .acciones-filtro {
+        justify-content: flex-end;
+    }
+}
+
+@media (max-width: 480px) {
+    .contenedor-principal {
+        padding: 1rem 0.75rem 2rem;
+    }
+
+    .formulario {
+        padding: 1.15rem;
+    }
+
+    .tarjeta {
+        padding: 1rem;
+    }
+
+    .grid-datos {
+        grid-template-columns: 1fr;
+    }
+}
