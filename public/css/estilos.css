@@ -546,6 +546,17 @@ tbody tr:hover {
     font-weight: 600;
 }
 
+/* Indicador visual de accesibilidad para campos con error de validación */
+.campo:has(.mensaje-error) input,
+.campo:has(.mensaje-error) select,
+.campo:has(.mensaje-error) textarea,
+.campo:has(span.error) input,
+.campo:has(span.error) select,
+.campo:has(span.error) textarea {
+    border-color: var(--color-baja-texto);
+    background-color: #fffbfa;
+}
+
 .grid-2 {
     display: grid;
     grid-template-columns: 1fr 1fr;
