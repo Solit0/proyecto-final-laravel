@@ -32,7 +32,7 @@ En Linux, si el usuario o grupo no tiene ID 1000, ajustar `LOCAL_UID` y `LOCAL_G
 
 ## Base de datos
 
-Cuando estén integradas las migraciones del negocio, Harry ejecuta una sola vez sobre la base compartida:
+Con las migraciones del negocio integradas en `database/migrations`, Harry ejecuta una sola vez sobre la base compartida:
 
 ```sh
 docker compose exec app php artisan migrate --seed --no-interaction
@@ -46,11 +46,11 @@ Para reconstruir la base de prueba, únicamente con acuerdo del equipo:
 docker compose exec app php artisan migrate:fresh --seed --no-interaction
 ```
 
-**Elimina todas las tablas y sus datos.** La reconstrucción con las migraciones definitivas está pendiente de integración.
+**Elimina todas las tablas y sus datos.** La reconstrucción debe coordinarse con todo el equipo porque afecta la base compartida.
 
 ## Modelo de datos
 
-Un laboratorio tiene muchos equipos; cada equipo pertenece a un laboratorio y tiene muchos mantenimientos. El diagrama representa el esquema acordado, pendiente de contrastar con las migraciones definitivas.
+Un laboratorio tiene muchos equipos; cada equipo pertenece a un laboratorio y tiene muchos mantenimientos. El diagrama representa el esquema que crean las migraciones y que describen los modelos.
 
 ```mermaid
 erDiagram
@@ -88,6 +88,35 @@ erDiagram
 
 Los códigos de inventario y números de serie son únicos. Los costos usan `decimal(10,2)`; solo la imagen admite null. Las relaciones impiden borrar laboratorios con equipos y equipos con historial.
 
+### Diccionario y restricciones
+
+| Tabla | Propósito | Restricciones principales |
+|---|---|---|
+| `laboratorios` | Catálogo de espacios de cómputo. | `nombre` único; `capacidad` mayor que cero mediante CHECK en PostgreSQL. |
+| `equipos` | Bienes asignados a un laboratorio. | `codigo_inventario` y `numero_serie` únicos; `costo` no negativo mediante CHECK; `estado` inicia en `operativo`; solo `imagen` es nullable. |
+| `mantenimientos` | Historial de trabajos por equipo. | `costo` no negativo mediante CHECK; `tipo` limitado a `preventivo` o `correctivo`. |
+
+Las claves foráneas usan `restrictOnDelete`: no se puede borrar un laboratorio que todavía tiene equipos ni un equipo con mantenimientos, para no perder historial ni dejar registros huérfanos. Las tablas del negocio se crean únicamente mediante migraciones.
+
+## Módulo de mantenimientos
+
+| Método | URL | Nombre | Acción |
+|---|---|---|---|
+| GET | `/mantenimientos` | `mantenimientos.index` | Listado paginado, más reciente primero. |
+| GET | `/mantenimientos/create` | `mantenimientos.create` | Formulario; excluye equipos dados de baja. |
+| POST | `/mantenimientos` | `mantenimientos.store` | Registro validado dentro de una transacción. |
+
+Reglas principales:
+
+- La fecha no puede ser anterior a la fecha de adquisición del equipo; se permiten fechas iguales o futuras.
+- Un equipo dado de baja no admite mantenimientos, aunque se manipule el POST.
+- El estado y la fecha se vuelven a comprobar con la fila del equipo bloqueada antes de insertar.
+- Un mantenimiento preventivo conserva el estado del equipo.
+- Un mantenimiento correctivo cambia el equipo a `en_reparacion` dentro de la misma transacción; si falla una escritura, se revierten ambas.
+- No existe una operación automática para devolver el equipo a `operativo`.
+
+Las pruebas del módulo están en `tests/Feature/MantenimientoTest.php`. Usan SQLite en memoria, ejecutan las migraciones reales y envuelven cada caso en una transacción con rollback, sin tocar Supabase ni usar `RefreshDatabase`.
+
 ## Uso y pruebas
 
 ```sh
@@ -101,4 +130,4 @@ docker compose down
 docker compose exec app php artisan test --compact
 ```
 
-Las pruebas usan SQLite en memoria con un esquema de prueba; no modifican Supabase ni sustituyen la comprobación de las migraciones definitivas.
+Las pruebas usan SQLite en memoria y no modifican Supabase: el módulo de mantenimientos ejecuta las migraciones reales, mientras que las pruebas de seeders usan el contrato de `tests/Fixtures`.
