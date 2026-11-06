@@ -647,32 +647,140 @@ tbody tr:hover {
    Paginación accesible
    -------------------------------------------------------------------------- */
 .paginacion {
-    margin-top: 1.25rem;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
 }
 
 .paginacion nav {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.35rem;
+    gap: 0.75rem;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    width: 100%;
 }
 
-.paginacion a, .paginacion span {
-    padding: 0.38rem 0.7rem;
+/* Ocultar bloque móvil en pantallas medianas/grandes y bloque de escritorio en móviles */
+.paginacion nav > div:first-child:not(:only-child) {
+    display: flex;
+    gap: 0.5rem;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.paginacion nav > div:last-child:not(:only-child) {
+    display: none;
+}
+
+@media (min-width: 640px) {
+    .paginacion nav > div:first-child:not(:only-child) {
+        display: none;
+    }
+
+    .paginacion nav > div:last-child:not(:only-child) {
+        display: flex;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        width: 100%;
+        gap: 1rem;
+    }
+}
+
+/* Texto informativo de resultados ("Showing X to Y of Z results") */
+.paginacion p {
+    margin: 0;
+    font-size: 0.88rem;
+    color: var(--color-texto-secundario);
+}
+
+.paginacion p span,
+.paginacion p .font-medium {
+    font-weight: 600;
+    color: var(--color-texto);
+    padding: 0 !important;
+    border: none !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+/* Agrupador de botones de paginación */
+.paginacion nav span.shadow-sm,
+.paginacion nav .inline-flex {
+    display: inline-flex;
+    align-items: center;
+    vertical-align: middle;
+}
+
+/* Resetear estilos en spans intermediarios para evitar bordes dobles */
+.paginacion span {
+    border: none;
+    background: transparent;
+    padding: 0;
+}
+
+/* Botones y números de página */
+.paginacion a,
+.paginacion nav > div:first-child span,
+.paginacion span[aria-disabled="true"] > span,
+.paginacion span[aria-current="page"] > span,
+.paginacion .cursor-not-allowed,
+.paginacion .cursor-default {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 2.25rem;
+    height: 2.25rem;
+    padding: 0.35rem 0.65rem;
     border: 1px solid var(--color-borde);
     border-radius: var(--radio-sm);
     background-color: var(--color-superficie);
     color: var(--color-texto);
     font-size: 0.88rem;
+    font-weight: 500;
     text-decoration: none;
-    line-height: 1.2;
+    line-height: 1;
+    box-sizing: border-box;
+    transition: background-color 0.15s ease, color 0.15s ease, border-color 0.15s ease;
 }
 
 .paginacion a:hover {
     background-color: var(--color-primario-suave);
     color: var(--color-primario);
+    border-color: var(--color-primario);
     text-decoration: none;
+}
+
+/* Página activa actual */
+.paginacion span[aria-current="page"] > span {
+    background-color: var(--color-primario);
+    color: #ffffff;
+    border-color: var(--color-primario);
+    font-weight: 600;
+}
+
+/* Botón deshabilitado (sin página previa o siguiente) */
+.paginacion span[aria-disabled="true"] > span,
+.paginacion span.cursor-not-allowed {
+    color: var(--color-texto-secundario);
+    background-color: var(--color-fondo);
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Iconos SVG del paginado: limitar tamaño a 1.25rem (20px) */
+.paginacion svg,
+.paginacion svg.w-5,
+.paginacion .w-5,
+svg.w-5 {
+    width: 1.25rem !important;
+    height: 1.25rem !important;
+    min-width: 1.25rem !important;
+    min-height: 1.25rem !important;
+    max-width: 1.25rem !important;
+    max-height: 1.25rem !important;
+    display: inline-block;
+    vertical-align: middle;
 }
 
 /* --------------------------------------------------------------------------
