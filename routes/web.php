@@ -2,11 +2,12 @@
 
 use App\Http\Controllers\EquipoController;
 use App\Http\Controllers\MantenimientoController;
+use App\Http\Controllers\PanelController;
 use Illuminate\Support\Facades\Route;
 
-Route::get('/', function () {
-    return view('welcome');
-});
+// Panel de inicio y reportes generales gestionados por Harry.
+Route::get('/', [PanelController::class, 'index'])->name('panel.index');
+Route::get('/reportes', [PanelController::class, 'reporte'])->name('reportes.index');
 
 // Contrato de recursos de Equipos gestionado por David.
 Route::resource('equipos', EquipoController::class);
