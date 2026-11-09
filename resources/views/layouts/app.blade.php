@@ -30,6 +30,9 @@
                 <a href="{{ route('mantenimientos.index') }}" class="enlace-nav {{ request()->routeIs('mantenimientos.*') ? 'activo' : '' }}">
                     Mantenimientos
                 </a>
+                <a href="{{ route('reportes.index') }}" class="enlace-nav {{ request()->routeIs('reportes.*') ? 'activo' : '' }}">
+                    Reportes
+                </a>
             </nav>
         </div>
     </header>
