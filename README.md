@@ -5,13 +5,13 @@
 Sistema para consultar los equipos de cada laboratorio, su estado y su historial de mantenimientos.
 
 - **Fase 1:** migraciones, modelos y relaciones, datos de prueba, listado paginado y ficha de equipos.
-- **Fase 2:** CRUD, búsqueda, validación, imágenes y reportes. Ya se adelantaron formularios, filtros y mantenimientos; falta completar los reportes y la gestión segura de imágenes ante fallos.
+- **Fase 2:** CRUD completo de equipos, búsqueda y filtros acumulativos, validación con Form Requests, gestión segura de fotografías con compensación transaccional, panel de control con métricas en tiempo real y reportes consolidados (distribución por laboratorio/estado, costos acumulados con agregados y corte anual de mantenimientos).
 
 ## Equipo y aportes
 
 | Integrante | GitHub | Trabajo desarrollado |
 |---|---|---|
-| Harry | [damian-sh](https://github.com/damian-sh) | Laravel y Docker, conexión a Supabase, factory y seeders, pruebas de semillas e integración y documentación. |
+| Harry | [damian-sh](https://github.com/damian-sh) | Laravel y Docker, conexión a Supabase, factory y seeders, gestión de imágenes y almacenamiento seguro, panel de control, reportes consolidados, pruebas de integración y documentación. |
 | Miguel Reyes | [mglreyes25](https://github.com/mglreyes25) | Migraciones, modelos Laboratorio/Mantenimiento, validación y registro de mantenimientos y sus pruebas. |
 | David Solito | [Solit0](https://github.com/Solit0) | Modelo Equipo, rutas, listado y ficha, CRUD, filtros y pruebas de equipos. |
 | Alfredo Montoya | [senmontoya](https://github.com/senmontoya) | Layout, vistas, formularios, estilos, adaptación móvil, capturas y pruebas de vistas. |
@@ -55,17 +55,17 @@ docker compose up -d --wait --wait-timeout 60
 docker compose ps
 ```
 
-Abrir [http://localhost:8080](http://localhost:8080). Desde el inicio se accede al [inventario](http://localhost:8080/equipos) y a los [mantenimientos](http://localhost:8080/mantenimientos). El servidor `php artisan serve` corre dentro de Docker; la base permanece en Supabase.
+Abrir [http://localhost:8080](http://localhost:8080). Desde el inicio se visualizan los indicadores generales del inventario y se accede al [inventario](http://localhost:8080/equipos), a los [mantenimientos](http://localhost:8080/mantenimientos) y a los [reportes de gestión](http://localhost:8080/reportes). El servidor `php artisan serve` corre dentro de Docker; la base permanece en Supabase.
 
 ```sh
-# Ejecutar pruebas aisladas de la base compartida
+# Ejecutar pruebas aisladas de la base compartida (61 pruebas aprobadas)
 docker compose exec app php artisan test --compact
 
 # Detener el servidor local
 docker compose down
 ```
 
-Las pruebas usan SQLite en memoria. Las de equipos, mantenimientos y vistas ejecutan las migraciones reales; las de seeders usan el contrato de `tests/Fixtures`.
+Las pruebas usan SQLite en memoria. Las de equipos, mantenimientos, imágenes, reportes y vistas ejecutan las migraciones reales; las de seeders usan el contrato de `tests/Fixtures`.
 
 ## Datos de prueba
 
@@ -133,9 +133,12 @@ Las migraciones están en `database/migrations`. Las claves foráneas usan `rest
 | Un mantenimiento no puede ser anterior a la adquisición ni corresponder a un equipo de baja. | `StoreMantenimientoRequest` y `MantenimientoController`. |
 | Registrar un correctivo deja el equipo en reparación dentro de la misma transacción. | `MantenimientoController::store`. |
 | No se puede borrar un equipo con historial ni mover su adquisición después del primer mantenimiento. | `EquipoController::destroy` y `update`; claves foráneas. |
-| Imagen opcional JPG/PNG/WebP de hasta 2 MB. | Requests de equipos; falta completar la recuperación de archivos ante fallos de escritura. |
+| Carga de imágenes JPG/PNG/WebP hasta 2 MB, ruta relativa en BD y almacenamiento en `storage/app/public/equipos`. | `StoreEquipoRequest`, `UpdateEquipoRequest` y `EquipoController::store`. |
+| Reemplazo y eliminación segura de imágenes: compensación ante fallos de BD y conservación de la foto si la eliminación es rechazada por historial. | `EquipoController::update`, `destroy` y `tests/Feature/ImagenEquipoTest.php`. |
+| Indicadores de inventario en tiempo real (total, operativos, en reparación, de baja, laboratorios y mantenimientos). | `PanelController::index` y `resources/views/panel/index.blade.php`. |
+| Reportes consolidados: distribución por laboratorio y estado (incluyendo vacíos en cero), costos acumulados con agregados `withSum` y equipos sin atención en el último año (`now()->subYear()`). | `PanelController::reporte`, `resources/views/reportes/index.blade.php` y `tests/Feature/ReporteTest.php`. |
 
-Las etiquetas `[MIGRACION]`, `[RELACION]`, `[ENCAPSULAMIENTO]` y `[CRUD-READ]` aparecen en las migraciones, modelos y métodos de consulta correspondientes.
+Las etiquetas `[MIGRACION]`, `[RELACION]`, `[ENCAPSULAMIENTO]`, `[CRUD-CREATE]`, `[CRUD-READ]`, `[CRUD-UPDATE]`, `[CRUD-DELETE]`, `[VALIDACION]` y `[SEGURIDAD]` aparecen en las migraciones, modelos, controladores, requests y vistas correspondientes.
 
 ## Capturas
 
