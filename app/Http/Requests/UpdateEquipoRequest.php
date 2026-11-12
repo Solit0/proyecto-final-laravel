@@ -7,6 +7,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * [VALIDACION] [REGLA-NEGOCIO] [SEGURIDAD]
+ * Form Request para la actualización de equipos en el inventario de laboratorios.
+ * Aplica reglas de unicidad ignorando de forma estricta únicamente el equipo enlazado en la ruta.
+ */
 class UpdateEquipoRequest extends FormRequest
 {
     /**

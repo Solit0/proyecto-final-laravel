@@ -7,6 +7,11 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
+/**
+ * [VALIDACION] [REGLA-NEGOCIO] [SEGURIDAD]
+ * Form Request para el registro de nuevos equipos en el inventario de laboratorios.
+ * Valida formato LAB-0000 único, número de serie único, costo no negativo y fecha no futura.
+ */
 class StoreEquipoRequest extends FormRequest
 {
     /**
