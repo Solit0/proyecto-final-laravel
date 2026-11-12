@@ -56,7 +56,8 @@ class EquipoController extends Controller
     }
 
     /**
-     * [CRUD-READ] Formulario de registro con laboratorios ordenados y equipo vacío.
+     * [CRUD-READ] Formulario de registro con catálogo de laboratorios ordenados alfabéticamente.
+     * Entrega una instancia vacía de Equipo para el enlace bidireccional del formulario.
      */
     public function create(): View
     {
@@ -69,7 +70,7 @@ class EquipoController extends Controller
     }
 
     /**
-     * [CRUD-CREATE] [SEGURIDAD] [INYECCION-DEPENDENCIAS] [VALIDACION]
+     * [CRUD-CREATE] [SEGURIDAD] [INYECCION-DEPENDENCIAS] [VALIDACION] [REGLA-NEGOCIO]
      * Registra un nuevo equipo usando únicamente datos validados y gestionando la fotografía.
      * En caso de fallo en la base de datos, compensa eliminando el archivo recién subido.
      */
