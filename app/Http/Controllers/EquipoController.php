@@ -128,7 +128,7 @@ class EquipoController extends Controller
     }
 
     /**
-     * [CRUD-UPDATE] [SEGURIDAD] [REGLA-NEGOCIO] [VALIDACION]
+     * [CRUD-UPDATE] [SEGURIDAD] [REGLA-NEGOCIO] [VALIDACION] [INYECCION-DEPENDENCIAS]
      * Actualiza el equipo dentro de una transacción con bloqueo de fila.
      * Verifica que la nueva adquisición no sea posterior al mantenimiento más antiguo,
      * preserva la fotografía actual si no se adjunta un nuevo archivo,
@@ -141,6 +141,7 @@ class EquipoController extends Controller
 
         try {
             DB::transaction(function () use ($equipo, $request, &$archivoNuevo, &$archivoAnteriorParaBorrar): void {
+                // [SEGURIDAD] [REGLA-NEGOCIO] Bloqueo pesimista para evitar colisiones con registros concurrentes de mantenimientos
                 $equipoBloqueado = Equipo::query()->lockForUpdate()->findOrFail($equipo->id);
                 $datos = $request->validated();
 
