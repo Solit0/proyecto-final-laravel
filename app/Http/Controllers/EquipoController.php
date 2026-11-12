@@ -191,9 +191,9 @@ class EquipoController extends Controller
 
     /**
      * [CRUD-DELETE] [REGLA-NEGOCIO] [SEGURIDAD]
-     * Elimina el equipo únicamente si no tiene historial de mantenimientos.
-     * Protege contra concurrencia con lockForUpdate y captura de QueryException.
-     * Solo borra la imagen física si la eliminación del registro en base de datos fue confirmada.
+     * Elimina el equipo únicamente si no tiene historial de mantenimientos asociado.
+     * Protege contra condiciones de carrera mediante lockForUpdate y captura de QueryException (restrictOnDelete).
+     * Solo borra la fotografía física del disco si la eliminación del registro en base de datos fue efectiva.
      */
     public function destroy(Equipo $equipo): RedirectResponse
     {
@@ -201,6 +201,7 @@ class EquipoController extends Controller
             $archivoABorrar = null;
 
             DB::transaction(function () use ($equipo, &$archivoABorrar): void {
+                // [REGLA-NEGOCIO] Bloqueo de fila para evaluar historial sin interferencia concurrente
                 $equipoBloqueado = Equipo::query()->lockForUpdate()->findOrFail($equipo->id);
 
                 if ($equipoBloqueado->mantenimientos()->exists()) {
@@ -211,11 +212,12 @@ class EquipoController extends Controller
                 $equipoBloqueado->delete();
             });
 
-            // Borrar el archivo físico solo después de que el registro fue efectivamente eliminado
+            // Borrar el archivo físico solo después de que el registro fue efectivamente eliminado en BD
             if ($archivoABorrar && Storage::disk('public')->exists($archivoABorrar)) {
                 Storage::disk('public')->delete($archivoABorrar);
             }
         } catch (LogicException|QueryException) {
+            // [REGLA-NEGOCIO] Mensaje informativo claro; la fotografía permanece intacta en el disco
             return redirect()
                 ->route('equipos.index')
                 ->with('error', 'No se puede eliminar porque tiene historial; puede marcarse de baja.');
