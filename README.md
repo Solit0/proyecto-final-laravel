@@ -58,7 +58,7 @@ docker compose ps
 Abrir [http://localhost:8080](http://localhost:8080). Desde el inicio se visualizan los indicadores generales del inventario y se accede al [inventario](http://localhost:8080/equipos), a los [mantenimientos](http://localhost:8080/mantenimientos) y a los [reportes de gestión](http://localhost:8080/reportes). El servidor `php artisan serve` corre dentro de Docker; la base permanece en Supabase.
 
 ```sh
-# Ejecutar pruebas aisladas de la base compartida (61 pruebas aprobadas)
+# Ejecutar pruebas aisladas de la base compartida (67 pruebas aprobadas)
 docker compose exec app php artisan test --compact
 
 # Detener el servidor local

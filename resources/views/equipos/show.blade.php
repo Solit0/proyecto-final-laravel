@@ -13,7 +13,7 @@
     </div>
     <div class="cabecera-acciones">
         <a class="boton boton-secundario" href="{{ route('equipos.edit', $equipo) }}">Editar equipo</a>
-        <form action="{{ route('equipos.destroy', $equipo) }}" method="POST" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar el equipo {{ $equipo->codigo_inventario }}?');">
+        <form action="{{ route('equipos.destroy', $equipo) }}" method="POST" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar el equipo {{ addslashes($equipo->codigo_inventario) }}?');">
             {{-- [SEGURIDAD] Token de protección contra ataques CSRF --}}
             @csrf
             {{-- [SEGURIDAD] Método HTTP DELETE para eliminación segura --}}

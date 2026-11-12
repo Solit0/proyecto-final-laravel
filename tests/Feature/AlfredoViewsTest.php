@@ -170,4 +170,120 @@ class AlfredoViewsTest extends TestCase
         $respuesta->assertSee('El mantenimiento correctivo dejará automáticamente el equipo en estado "En reparación"', false);
         $respuesta->assertSee('LAB-0050');
     }
+
+    public function test_formulario_crear_mantenimiento_sin_equipos_habilitados_muestra_aviso_y_deshabilita_envio(): void
+    {
+        $lab = Laboratorio::factory()->create();
+        Equipo::factory()->create([
+            'laboratorio_id' => $lab->id,
+            'codigo_inventario' => 'LAB-0060',
+            'estado' => Equipo::ESTADO_DE_BAJA,
+        ]);
+
+        $respuesta = $this->get(route('mantenimientos.create'));
+
+        $respuesta->assertOk();
+        $respuesta->assertSee('No hay equipos habilitados para mantenimiento en este momento (los equipos dados de baja no admiten registro).');
+        $respuesta->assertSee('disabled', false);
+    }
+
+    public function test_listado_equipos_incluye_confirmacion_con_codigo_y_token_csrf(): void
+    {
+        $lab = Laboratorio::factory()->create();
+        $equipo = Equipo::factory()->create([
+            'laboratorio_id' => $lab->id,
+            'codigo_inventario' => 'LAB-0070',
+        ]);
+
+        $respuesta = $this->get(route('equipos.index'));
+
+        $respuesta->assertOk();
+        $respuesta->assertSee("onsubmit=\"return confirm('¿Seguro que deseas eliminar el equipo LAB-0070?');\"", false);
+        $respuesta->assertSee(route('equipos.edit', $equipo));
+        $respuesta->assertSee('name="_method" value="DELETE"', false);
+    }
+
+    public function test_eliminacion_rechazada_por_historial_muestra_mensaje_flash_en_interfaz(): void
+    {
+        $lab = Laboratorio::factory()->create();
+        $equipo = Equipo::factory()->create([
+            'laboratorio_id' => $lab->id,
+            'codigo_inventario' => 'LAB-0080',
+        ]);
+        Mantenimiento::factory()->create([
+            'equipo_id' => $equipo->id,
+            'fecha' => $equipo->fecha_adquisicion,
+        ]);
+
+        $respuesta = $this->followingRedirects()
+            ->from(route('equipos.index'))
+            ->delete(route('equipos.destroy', $equipo));
+
+        $respuesta->assertOk();
+        $respuesta->assertSee('No se puede eliminar porque tiene historial; puede marcarse de baja.');
+        $respuesta->assertSee('LAB-0080');
+    }
+
+    public function test_validacion_fallida_equipo_conserva_valores_old_y_muestra_errores(): void
+    {
+        $lab = Laboratorio::factory()->create();
+
+        $respuesta = $this->followingRedirects()
+            ->from(route('equipos.create'))
+            ->post(route('equipos.store'), [
+                'laboratorio_id' => $lab->id,
+                'codigo_inventario' => 'CODIGO-INVALIDO',
+                'tipo' => 'computadora',
+                'marca' => 'Dell',
+                'modelo' => 'OptiPlex',
+                'numero_serie' => 'SER-112233',
+                'fecha_adquisicion' => now()->toDateString(),
+                'costo' => '-50.00',
+                'estado' => 'operativo',
+            ]);
+
+        $respuesta->assertOk();
+        $respuesta->assertSee('El código de inventario debe tener el formato LAB-0000');
+        $respuesta->assertSee('El costo no puede ser negativo.');
+        $respuesta->assertSee('CODIGO-INVALIDO');
+        $respuesta->assertSee('SER-112233');
+    }
+
+    public function test_filtros_de_busqueda_muestran_boton_limpiar_y_conservan_parametros(): void
+    {
+        $lab = Laboratorio::factory()->create();
+        Equipo::factory()->create([
+            'laboratorio_id' => $lab->id,
+            'codigo_inventario' => 'LAB-0090',
+            'marca' => 'HP Elite',
+            'estado' => Equipo::ESTADO_OPERATIVO,
+        ]);
+
+        $respuesta = $this->get(route('equipos.index', [
+            'q' => 'Elite',
+            'laboratorio_id' => $lab->id,
+            'estado' => 'operativo',
+        ]));
+
+        $respuesta->assertOk();
+        $respuesta->assertSee('Limpiar');
+        $respuesta->assertSee('LAB-0090');
+        $respuesta->assertSee('value="Elite"', false);
+    }
+
+    public function test_reportes_muestra_los_tres_bloques_exigidos(): void
+    {
+        $lab = Laboratorio::factory()->create();
+        Equipo::factory()->create([
+            'laboratorio_id' => $lab->id,
+            'codigo_inventario' => 'LAB-0100',
+        ]);
+
+        $respuesta = $this->get(route('reportes.index'));
+
+        $respuesta->assertOk();
+        $respuesta->assertSee('1. Distribución de Equipos por Laboratorio y Estado');
+        $respuesta->assertSee('2. Costo Total de Mantenimiento por Equipo');
+        $respuesta->assertSee('3. Equipos sin Mantenimiento en el Último Año');
+    }
 }

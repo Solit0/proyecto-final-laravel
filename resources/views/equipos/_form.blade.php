@@ -2,7 +2,7 @@
 
 <div class="campo">
     <label for="laboratorio_id">Laboratorio asignado <span aria-hidden="true">*</span></label>
-    <select id="laboratorio_id" name="laboratorio_id" required aria-describedby="@error('laboratorio_id') error-laboratorio_id @enderror">
+    <select id="laboratorio_id" name="laboratorio_id" required @error('laboratorio_id') aria-describedby="error-laboratorio_id" @enderror>
         <option value="">Seleccione un laboratorio</option>
         @foreach ($laboratorios as $laboratorio)
             <option value="{{ $laboratorio->id }}" @selected((string) old('laboratorio_id', $equipo->laboratorio_id) === (string) $laboratorio->id)>
@@ -35,7 +35,7 @@
 
     <div class="campo">
         <label for="tipo">Tipo de equipo <span aria-hidden="true">*</span></label>
-        <select id="tipo" name="tipo" required aria-describedby="@error('tipo') error-tipo @enderror">
+        <select id="tipo" name="tipo" required @error('tipo') aria-describedby="error-tipo" @enderror>
             <option value="">Seleccione el tipo</option>
             @foreach (\App\Models\Equipo::TIPOS as $tipo)
                 <option value="{{ $tipo }}" @selected(old('tipo', $equipo->tipo) === $tipo)>
@@ -59,7 +59,7 @@
                placeholder="Ej: Lenovo, Dell, HP..."
                value="{{ old('marca', $equipo->marca) }}"
                required
-               aria-describedby="@error('marca') error-marca @enderror">
+               @error('marca') aria-describedby="error-marca" @enderror>
         @error('marca')
             <span id="error-marca" class="mensaje-error error" role="alert">{{ $message }}</span>
         @enderror
@@ -74,7 +74,7 @@
                placeholder="Ej: ThinkCentre M70q, OptiPlex..."
                value="{{ old('modelo', $equipo->modelo) }}"
                required
-               aria-describedby="@error('modelo') error-modelo @enderror">
+               @error('modelo') aria-describedby="error-modelo" @enderror>
         @error('modelo')
             <span id="error-modelo" class="mensaje-error error" role="alert">{{ $message }}</span>
         @enderror
@@ -91,7 +91,7 @@
                placeholder="Ej: SER-XYZ12345"
                value="{{ old('numero_serie', $equipo->numero_serie) }}"
                required
-               aria-describedby="@error('numero_serie') error-numero_serie @enderror">
+               @error('numero_serie') aria-describedby="error-numero_serie" @enderror>
         @error('numero_serie')
             <span id="error-numero_serie" class="mensaje-error error" role="alert">{{ $message }}</span>
         @enderror
@@ -105,7 +105,7 @@
                max="{{ now()->toDateString() }}"
                value="{{ old('fecha_adquisicion', optional($equipo->fecha_adquisicion)->format('Y-m-d') ?? now()->toDateString()) }}"
                required
-               aria-describedby="@error('fecha_adquisicion') error-fecha_adquisicion @enderror">
+               @error('fecha_adquisicion') aria-describedby="error-fecha_adquisicion" @enderror>
         @error('fecha_adquisicion')
             <span id="error-fecha_adquisicion" class="mensaje-error error" role="alert">{{ $message }}</span>
         @enderror
@@ -122,9 +122,9 @@
                max="99999999.99"
                step="0.01"
                placeholder="0.00"
-               value="{{ old('costo', $equipo->costo !== null ? (float) $equipo->costo : '') }}"
+               value="{{ old('costo', $equipo->costo !== null ? number_format((float) $equipo->costo, 2, '.', '') : '') }}"
                required
-               aria-describedby="@error('costo') error-costo @enderror">
+               @error('costo') aria-describedby="error-costo" @enderror>
         @error('costo')
             <span id="error-costo" class="mensaje-error error" role="alert">{{ $message }}</span>
         @enderror
@@ -132,7 +132,7 @@
 
     <div class="campo">
         <label for="estado">Estado inicial / actual <span aria-hidden="true">*</span></label>
-        <select id="estado" name="estado" required aria-describedby="@error('estado') error-estado @enderror">
+        <select id="estado" name="estado" required @error('estado') aria-describedby="error-estado" @enderror>
             <option value="">Seleccione el estado</option>
             <option value="operativo" @selected(old('estado', $equipo->estado ?? 'operativo') === 'operativo')>Operativo</option>
             <option value="en_reparacion" @selected(old('estado', $equipo->estado) === 'en_reparacion')>En reparación</option>
@@ -148,7 +148,12 @@
     <label for="imagen">Fotografía del equipo (opcional)</label>
     @if ($equipo->imagen)
         <div class="preview-imagen">
-            <img src="{{ asset('storage/' . $equipo->imagen) }}" alt="Fotografía actual de {{ $equipo->codigo_inventario }}">
+            @php
+                $tieneImagenLocal = !empty($equipo->imagen) && \Illuminate\Support\Facades\Storage::disk('public')->exists($equipo->imagen);
+            @endphp
+            <img src="{{ $tieneImagenLocal ? asset('storage/' . $equipo->imagen) : asset('images/equipo-default.svg') }}"
+                 alt="Fotografía actual de {{ $equipo->codigo_inventario }}"
+                 onerror="this.onerror=null;this.src='{{ asset('images/equipo-default.svg') }}';">
             <small class="ayuda">Fotografía actual. Subir un nuevo archivo la sustituirá. Si no se selecciona ningún archivo, se conservará la imagen existente.</small>
         </div>
     @endif

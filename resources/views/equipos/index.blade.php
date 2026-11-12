@@ -47,7 +47,7 @@
 
         <div class="acciones-filtro">
             <button class="boton" type="submit">Filtrar</button>
-            @if (request()->hasAny(['q', 'laboratorio_id', 'estado']))
+            @if (request()->filled('q') || request()->filled('laboratorio_id') || request()->filled('estado'))
                 <a class="boton boton-secundario" href="{{ route('equipos.index') }}">Limpiar</a>
             @endif
         </div>
@@ -56,7 +56,7 @@
 
 @if ($equipos->isEmpty())
     {{-- Diferenciación de estados vacíos según si hay filtros aplicados o no --}}
-    @if (request()->hasAny(['q', 'laboratorio_id', 'estado']))
+    @if (request()->filled('q') || request()->filled('laboratorio_id') || request()->filled('estado'))
         <div class="vacio" role="region" aria-label="Sin resultados de búsqueda">
             <p><strong>Sin resultados para estos filtros</strong></p>
             <p>No se encontraron equipos que coincidan con los criterios especificados.</p>
@@ -123,7 +123,7 @@
                                 <a href="{{ route('equipos.edit', $equipo) }}">Editar</a>
                                 <span>·</span>
                                 {{-- Formulario seguro para eliminación con confirmación nativa del navegador --}}
-                                <form action="{{ route('equipos.destroy', $equipo) }}" method="POST" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar el equipo {{ $equipo->codigo_inventario }}?');">
+                                <form action="{{ route('equipos.destroy', $equipo) }}" method="POST" class="form-eliminar" onsubmit="return confirm('¿Seguro que deseas eliminar el equipo {{ addslashes($equipo->codigo_inventario) }}?');">
                                     {{-- [SEGURIDAD] Token CSRF contra falsificación de peticiones cruzadas --}}
                                     @csrf
                                     {{-- [SEGURIDAD] Método HTTP DELETE para eliminación segura --}}

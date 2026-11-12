@@ -25,7 +25,7 @@
 
     <div class="campo">
         <label for="equipo_id">Equipo a intervenir <span aria-hidden="true">*</span></label>
-        <select id="equipo_id" name="equipo_id" required aria-describedby="@error('equipo_id') error-equipo_id @enderror">
+        <select id="equipo_id" name="equipo_id" required @error('equipo_id') aria-describedby="error-equipo_id" @enderror>
             <option value="">Seleccione un equipo</option>
             @foreach ($equipos as $equipo)
                 <option value="{{ $equipo->id }}" @selected((string) old('equipo_id') === (string) $equipo->id)>
@@ -47,7 +47,7 @@
                    type="date"
                    value="{{ old('fecha', now()->toDateString()) }}"
                    required
-                   aria-describedby="@error('fecha') error-fecha @enderror">
+                   @error('fecha') aria-describedby="error-fecha" @enderror>
             @error('fecha')
                 <span id="error-fecha" class="mensaje-error error" role="alert">{{ $message }}</span>
             @enderror
@@ -73,7 +73,7 @@
                   name="descripcion"
                   placeholder="Detalla las actividades realizadas, repuestos cambiados o diagnóstico..."
                   required
-                  aria-describedby="@error('descripcion') error-descripcion @enderror">{{ old('descripcion') }}</textarea>
+                  @error('descripcion') aria-describedby="error-descripcion" @enderror>{{ old('descripcion') }}</textarea>
         @error('descripcion')
             <span id="error-descripcion" class="mensaje-error error" role="alert">{{ $message }}</span>
         @enderror
@@ -89,7 +89,7 @@
                    placeholder="Nombre del técnico o encargado"
                    value="{{ old('tecnico_responsable') }}"
                    required
-                   aria-describedby="@error('tecnico_responsable') error-tecnico_responsable @enderror">
+                   @error('tecnico_responsable') aria-describedby="error-tecnico_responsable" @enderror>
             @error('tecnico_responsable')
                 <span id="error-tecnico_responsable" class="mensaje-error error" role="alert">{{ $message }}</span>
             @enderror
@@ -106,7 +106,7 @@
                    placeholder="0.00"
                    value="{{ old('costo') }}"
                    required
-                   aria-describedby="@error('costo') error-costo @enderror">
+                   @error('costo') aria-describedby="error-costo" @enderror>
             @error('costo')
                 <span id="error-costo" class="mensaje-error error" role="alert">{{ $message }}</span>
             @enderror
