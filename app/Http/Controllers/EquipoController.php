@@ -19,8 +19,8 @@ use LogicException;
 class EquipoController extends Controller
 {
     /**
-     * [CRUD-READ] Listado paginado de 10 en 10 ordenado por código de inventario,
-     * con búsqueda insensible a mayúsculas y filtros acumulativos por laboratorio y estado.
+     * [CRUD-READ] [REGLA-NEGOCIO] [SEGURIDAD] Listado paginado de 10 en 10 ordenado por código de inventario,
+     * con búsqueda insensible a mayúsculas agrupando cláusulas OR y filtros acumulativos por laboratorio y estado.
      */
     public function index(Request $request): View
     {

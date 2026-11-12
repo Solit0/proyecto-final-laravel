@@ -454,4 +454,83 @@ class EquipoTest extends TestCase
 
         $this->assertDatabaseHas('equipos', ['id' => $equipo->id]);
     }
+
+    public function test_creacion_rechaza_costo_negativo_laboratorio_inexistente_o_estado_manipulado(): void
+    {
+        $laboratorio = Laboratorio::factory()->create();
+
+        // 1. Costo negativo
+        $resCosto = $this->from(route('equipos.create'))->post(route('equipos.store'), [
+            'laboratorio_id' => $laboratorio->id,
+            'codigo_inventario' => 'LAB-0081',
+            'tipo' => 'computadora',
+            'marca' => 'Dell',
+            'modelo' => 'OptiPlex',
+            'numero_serie' => 'SER-TEST-0081',
+            'fecha_adquisicion' => today()->toDateString(),
+            'costo' => '-15.00',
+            'estado' => 'operativo',
+        ]);
+        $resCosto->assertRedirect(route('equipos.create'));
+        $resCosto->assertSessionHasErrors(['costo']);
+
+        // 2. Laboratorio inexistente
+        $resLab = $this->from(route('equipos.create'))->post(route('equipos.store'), [
+            'laboratorio_id' => 999999,
+            'codigo_inventario' => 'LAB-0082',
+            'tipo' => 'computadora',
+            'marca' => 'Dell',
+            'modelo' => 'OptiPlex',
+            'numero_serie' => 'SER-TEST-0082',
+            'fecha_adquisicion' => today()->toDateString(),
+            'costo' => '100.00',
+            'estado' => 'operativo',
+        ]);
+        $resLab->assertRedirect(route('equipos.create'));
+        $resLab->assertSessionHasErrors(['laboratorio_id']);
+
+        // 3. Estado manipulado
+        $resEstado = $this->from(route('equipos.create'))->post(route('equipos.store'), [
+            'laboratorio_id' => $laboratorio->id,
+            'codigo_inventario' => 'LAB-0083',
+            'tipo' => 'computadora',
+            'marca' => 'Dell',
+            'modelo' => 'OptiPlex',
+            'numero_serie' => 'SER-TEST-0083',
+            'fecha_adquisicion' => today()->toDateString(),
+            'costo' => '100.00',
+            'estado' => 'manipulado_invalido',
+        ]);
+        $resEstado->assertRedirect(route('equipos.create'));
+        $resEstado->assertSessionHasErrors(['estado']);
+    }
+
+    public function test_buscar_y_filtrar_a_la_vez_luego_cambiar_de_pagina_conserva_ambos_criterios(): void
+    {
+        $lab = Laboratorio::factory()->create();
+
+        for ($i = 1; $i <= 15; $i++) {
+            Equipo::factory()->create([
+                'laboratorio_id' => $lab->id,
+                'codigo_inventario' => sprintf('LAB-%04d', $i),
+                'marca' => 'Dell',
+                'estado' => Equipo::ESTADO_OPERATIVO,
+            ]);
+        }
+
+        $respuesta = $this->get(route('equipos.index', [
+            'q' => 'dell',
+            'laboratorio_id' => $lab->id,
+            'estado' => Equipo::ESTADO_OPERATIVO,
+        ]));
+
+        $respuesta->assertOk();
+        $equipos = $respuesta->viewData('equipos');
+        $this->assertSame(15, $equipos->total());
+        $nextPageUrl = $equipos->nextPageUrl();
+        $this->assertNotNull($nextPageUrl);
+        $this->assertStringContainsString('q=dell', $nextPageUrl);
+        $this->assertStringContainsString('laboratorio_id='.$lab->id, $nextPageUrl);
+        $this->assertStringContainsString('estado=operativo', $nextPageUrl);
+    }
 }
