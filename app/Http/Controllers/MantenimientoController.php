@@ -14,7 +14,7 @@ use Illuminate\View\View;
 class MantenimientoController extends Controller
 {
     /**
-     * [CRUD-READ] Listado paginado con el equipo y su laboratorio precargados.
+     * Listado paginado de mantenimientos con equipo y laboratorio.
      */
     public function index(): View
     {
@@ -28,7 +28,7 @@ class MantenimientoController extends Controller
     }
 
     /**
-     * [CRUD-READ] Formulario de registro; excluye los equipos dados de baja.
+     * Formulario de registro (excluye equipos dados de baja).
      */
     public function create(): View
     {
@@ -42,8 +42,7 @@ class MantenimientoController extends Controller
     }
 
     /**
-     * [CRUD-CREATE] [SEGURIDAD] Solo se usan los datos validados.
-     * [INYECCION-DEPENDENCIAS] Laravel resuelve el Form Request antes de entrar al método.
+     * Registra un nuevo mantenimiento.
      */
     public function store(StoreMantenimientoRequest $request): RedirectResponse
     {
@@ -63,7 +62,7 @@ class MantenimientoController extends Controller
             Mantenimiento::query()->create($datos);
 
             if ($datos['tipo'] === Mantenimiento::TIPO_CORRECTIVO) {
-                // [REGLA-NEGOCIO] El correctivo deja el equipo en reparación en la misma transacción.
+                // El mantenimiento correctivo cambia el estado del equipo a en reparación
                 $equipo->update(['estado' => Equipo::ESTADO_EN_REPARACION]);
             }
         });
@@ -74,8 +73,7 @@ class MantenimientoController extends Controller
     }
 
     /**
-     * [REGLA-NEGOCIO] Vuelve a comprobar el estado y la adquisición con la fila bloqueada,
-     * porque el equipo pudo cambiar después de abrir el formulario.
+     * Valida estado y fecha contra la adquisición con la fila bloqueada.
      */
     private function comprobarEquipoYFecha(Equipo $equipo, string $fecha): void
     {

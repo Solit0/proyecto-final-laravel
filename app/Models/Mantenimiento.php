@@ -20,8 +20,6 @@ class Mantenimiento extends Model
     use HasFactory;
 
     /**
-     * Campos asignables en masa.
-     *
      * @var list<string>
      */
     protected $fillable = [
@@ -34,8 +32,6 @@ class Mantenimiento extends Model
     ];
 
     /**
-     * [ENCAPSULAMIENTO] La fecha se expone como Carbon y el costo conserva dos decimales.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -46,9 +42,6 @@ class Mantenimiento extends Model
         ];
     }
 
-    /**
-     * [RELACION] Cada mantenimiento pertenece al equipo que lo recibió.
-     */
     public function equipo(): BelongsTo
     {
         return $this->belongsTo(Equipo::class);

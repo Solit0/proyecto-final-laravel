@@ -7,24 +7,14 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/**
- * [VALIDACION] [REGLA-NEGOCIO] [SEGURIDAD]
- * Form Request para el registro de nuevos equipos en el inventario de laboratorios.
- * Valida formato LAB-0000 único, número de serie único, costo no negativo y fecha no futura.
- */
 class StoreEquipoRequest extends FormRequest
 {
-    /**
-     * [SEGURIDAD] El alcance local de la aplicación no requiere autenticación en esta fase.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * [VALIDACION] [REGLA-NEGOCIO] Reglas de registro de equipos en el inventario.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -54,8 +44,6 @@ class StoreEquipoRequest extends FormRequest
     }
 
     /**
-     * [VALIDACION] Nombres amigables para los campos.
-     *
      * @return array<string, string>
      */
     public function attributes(): array
@@ -75,8 +63,6 @@ class StoreEquipoRequest extends FormRequest
     }
 
     /**
-     * [VALIDACION] Mensajes personalizados en español.
-     *
      * @return array<string, string>
      */
     public function messages(): array

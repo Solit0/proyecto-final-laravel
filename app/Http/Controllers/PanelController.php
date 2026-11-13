@@ -11,16 +11,13 @@ use Illuminate\View\View;
 class PanelController extends Controller
 {
     /**
-     * [CRUD-READ] [REGLA-NEGOCIO]
-     * Muestra el panel principal del sistema con indicadores generales del inventario:
-     * total de equipos, desglose por estado operativo, laboratorios y mantenimientos registrados.
+     * Panel principal con indicadores generales del inventario.
      */
     public function index(): View
     {
         try {
             $totalEquipos = Equipo::query()->count();
 
-            // Conteo eficiente de equipos por cada estado del inventario
             $conteosPorEstado = Equipo::query()
                 ->selectRaw('estado, COUNT(*) as total')
                 ->groupBy('estado')
@@ -52,15 +49,11 @@ class PanelController extends Controller
     }
 
     /**
-     * [CRUD-READ] [REGLA-NEGOCIO] [RELACION]
-     * Genera los reportes obligatorios exigidos en la rúbrica del Caso 4:
-     * 1. Distribución de equipos agrupados por laboratorio y estado (incluye labs en cero).
-     * 2. Costo total de mantenimiento acumulado por equipo mediante agregados Eloquent.
-     * 3. Equipos sin ningún mantenimiento en el último año (límite: hoy - 1 año exacto).
+     * Reportes de distribución, costos y equipos sin atención reciente.
      */
     public function reporte(): View
     {
-        // 1. Distribución de equipos por laboratorio y estado (usando subconsultas withCount optimizadas)
+        // 1. Distribución de equipos por laboratorio y estado
         $distribucionLaboratorios = Laboratorio::query()
             ->withCount([
                 'equipos',
@@ -71,7 +64,7 @@ class PanelController extends Controller
             ->orderBy('nombre')
             ->get();
 
-        // 2. Costo total de mantenimientos acumulado por equipo (withSum para evitar N+1 y operaciones flotantes)
+        // 2. Costo total de mantenimientos acumulado por equipo
         $equiposConCostos = Equipo::query()
             ->with('laboratorio')
             ->withSum('mantenimientos', 'costo')
@@ -79,8 +72,7 @@ class PanelController extends Controller
             ->orderBy('codigo_inventario')
             ->get();
 
-        // 3. Equipos sin ningún mantenimiento en el último año (o que nunca tuvieron uno)
-        // [REGLA-NEGOCIO] Límite: fecha de hoy menos un año; un mantenimiento exactamente en esa fecha cuenta como dentro del período.
+        // 3. Equipos sin mantenimientos en el último año (hoy menos 1 año)
         $limiteUnAno = Carbon::now()->subYear()->startOfDay();
 
         $equiposSinMantenimientoAnual = Equipo::query()

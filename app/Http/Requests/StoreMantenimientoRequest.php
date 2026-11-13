@@ -12,17 +12,12 @@ use Illuminate\Validation\Validator;
 
 class StoreMantenimientoRequest extends FormRequest
 {
-    /**
-     * [SEGURIDAD] El formulario local no requiere autenticación en este caso.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * [VALIDACION] Reglas del registro de mantenimientos.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -38,8 +33,7 @@ class StoreMantenimientoRequest extends FormRequest
     }
 
     /**
-     * [VALIDACION] [REGLA-NEGOCIO] La fecha no puede ser anterior a la adquisición y el
-     * equipo dado de baja no admite mantenimientos.
+     * Valida que el equipo no esté de baja y que la fecha no sea anterior a su adquisición.
      */
     public function withValidator(Validator $validator): void
     {
@@ -75,8 +69,6 @@ class StoreMantenimientoRequest extends FormRequest
     }
 
     /**
-     * [VALIDACION] Mensajes en español.
-     *
      * @return array<string, string>
      */
     public function messages(): array

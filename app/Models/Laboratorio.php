@@ -13,8 +13,6 @@ class Laboratorio extends Model
     use HasFactory;
 
     /**
-     * Campos asignables en masa.
-     *
      * @var list<string>
      */
     protected $fillable = [
@@ -24,8 +22,6 @@ class Laboratorio extends Model
     ];
 
     /**
-     * [ENCAPSULAMIENTO] La capacidad siempre se expone como entero, no como texto.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -35,9 +31,6 @@ class Laboratorio extends Model
         ];
     }
 
-    /**
-     * [RELACION] Un laboratorio contiene muchos equipos.
-     */
     public function equipos(): HasMany
     {
         return $this->hasMany(Equipo::class);

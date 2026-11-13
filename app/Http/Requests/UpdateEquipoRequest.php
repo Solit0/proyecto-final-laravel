@@ -7,26 +7,14 @@ use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\Rule;
 
-/**
- * [VALIDACION] [REGLA-NEGOCIO] [SEGURIDAD]
- * Form Request para la actualización de equipos en el inventario de laboratorios.
- * Aplica reglas de unicidad ignorando de forma estricta únicamente el equipo enlazado en la ruta.
- */
 class UpdateEquipoRequest extends FormRequest
 {
-    /**
-     * [SEGURIDAD] El alcance local de la aplicación no requiere autenticación en esta fase.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
     /**
-     * [VALIDACION] [REGLA-NEGOCIO] Reglas de actualización del equipo.
-     * Solo se ignora el ID del modelo enlazado por la ruta mediante Route Model Binding,
-     * nunca un ID enviado arbitrariamente por el formulario.
-     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
@@ -59,8 +47,6 @@ class UpdateEquipoRequest extends FormRequest
     }
 
     /**
-     * [VALIDACION] Nombres amigables para los campos.
-     *
      * @return array<string, string>
      */
     public function attributes(): array
@@ -80,8 +66,6 @@ class UpdateEquipoRequest extends FormRequest
     }
 
     /**
-     * [VALIDACION] Mensajes personalizados en español.
-     *
      * @return array<string, string>
      */
     public function messages(): array

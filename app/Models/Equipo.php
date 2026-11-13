@@ -11,11 +11,6 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
- * Modelo Equipo para el inventario de laboratorios de cómputo.
- *
- * [ENCAPSULAMIENTO] y [RELACION]
- * Claves foráneas acordadas con Miguel: laboratorio_id en equipos y equipo_id en mantenimientos.
- *
  * @property int $id
  * @property int $laboratorio_id
  * @property string $codigo_inventario
@@ -50,8 +45,6 @@ class Equipo extends Model
     use HasFactory;
 
     /**
-     * Campos asignables en masa.
-     *
      * @var list<string>
      */
     protected $fillable = [
@@ -68,8 +61,6 @@ class Equipo extends Model
     ];
 
     /**
-     * [ENCAPSULAMIENTO] Las fechas y el dinero se manejan con sus tipos y precisión correctos.
-     *
      * @return array<string, string>
      */
     protected function casts(): array
@@ -80,17 +71,11 @@ class Equipo extends Model
         ];
     }
 
-    /**
-     * [RELACION] Cada equipo pertenece a un laboratorio.
-     */
     public function laboratorio(): BelongsTo
     {
         return $this->belongsTo(Laboratorio::class);
     }
 
-    /**
-     * [RELACION] Un equipo acumula muchos mantenimientos.
-     */
     public function mantenimientos(): HasMany
     {
         return $this->hasMany(Mantenimiento::class);
